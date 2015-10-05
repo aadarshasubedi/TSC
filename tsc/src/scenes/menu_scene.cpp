@@ -135,11 +135,12 @@ void cMenuScene::on_handle_return_released(sf::Event& evt)
 {
     switch (m_selected_item_id) {
     case 0:
-        gp_app->Get_SceneManager().Push_Scene(new cLevelScene("testlevel"));
+        gp_app->Get_SceneManager().Push_Scene(new cLevelScene("testlevel")); // DEBUG
         break;
     case 1:
         break;
     case 2:
+        gp_app->Get_SceneManager().Push_Scene(new cLevelScene("lvl_2")); // DEBUG
         break;
     case 3:
         break;

@@ -157,41 +157,41 @@ namespace TSC {
         return std::string(value); // copy
     }
 
-//// Return the opposite Direction
-//    ObjectDirection Get_Opposite_Direction(const ObjectDirection direction);
-//// Return the Direction Name
-//    std::string Get_Direction_Name(const ObjectDirection dir);
-//// Return the Direction identifier
-//    ObjectDirection Get_Direction_Id(const std::string& str_direction);
+    // Return the opposite Direction
+    ObjectDirection Get_Opposite_Direction(const ObjectDirection direction);
+    // Return the Direction Name
+    std::string Get_Direction_Name(const ObjectDirection dir);
+    // Return the Direction identifier
+    ObjectDirection Get_Direction_Id(const std::string& str_direction);
 //
 //    /* Return the Color of the given Sprite
 //     * based mostly on sprite array
 //    */
 //    Color Get_Sprite_Color(const cSprite* sprite);
 //
-//// Return the massive type Name
-//    std::string Get_Massive_Type_Name(const MassiveType mtype);
-//// Return the massive type identifier
-//    MassiveType Get_Massive_Type_Id(const std::string& str_massivetype);
-//// Return the Color of the given Massivetype
-//    Color Get_Massive_Type_Color(const MassiveType mtype);
-//
-//// Return the ground type name
-//    std::string Get_Ground_Type_Name(const GroundType gtype);
-//// Return the ground type identifier
-//    GroundType Get_Ground_Type_Id(const std::string& str_groundtype);
-//
-//// Return the level land type name
-//    std::string Get_Level_Land_Type_Name(const LevelLandType land_type);
-//// Return the level land type identifier
-//    LevelLandType Get_Level_Land_Type_Id(const std::string& str_type);
-//
-//// Return the Color Name
-//    std::string Get_Color_Name(const DefaultColor color);
-//// Return the Color identifier
-//    DefaultColor Get_Color_Id(const std::string& str_color);
+    // Return the massive type Name
+    std::string Get_Collision_Type_Name(const CollisionType mtype);
+    //// Return the massive type identifier
+    CollisionType Get_Collision_Type_Id(const std::string& str_massivetype);
+    // Return the Color of the given Massivetype
+    sf::Color Get_Collision_Type_Color(const CollisionType mtype);
 
-// Return the Difficulty name
+    // Return the ground type name
+    std::string Get_Ground_Type_Name(const GroundType gtype);
+    // Return the ground type identifier
+    GroundType Get_Ground_Type_Id(const std::string& str_groundtype);
+
+    // Return the level land type name
+    std::string Get_Level_Land_Type_Name(const LevelLandType land_type);
+    // Return the level land type identifier
+    LevelLandType Get_Level_Land_Type_Id(const std::string& str_type);
+
+    // Return the Color Name
+    std::string Get_Color_Name(const DefaultColor color);
+    // Return the Color identifier
+    DefaultColor Get_Color_Id(const std::string& str_color);
+
+    // Return the Difficulty name
     std::string Get_Difficulty_Name(uint8_t difficulty);
 
 // Returns the entire content of the nonbinary file `file'.

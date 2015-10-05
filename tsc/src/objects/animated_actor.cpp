@@ -21,6 +21,12 @@ cAnimatedActor::cAnimatedActor()
 {
 }
 
+cAnimatedActor::cAnimatedActor(XmlAttributes& attributes, cLevel& level, const std::string type_name)
+    : cSpriteActor(attributes, level, type_name)
+{
+    //
+}
+
 cAnimatedActor::~cAnimatedActor()
 {
     //

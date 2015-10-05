@@ -17,52 +17,42 @@
 #ifndef TSC_SPINBOX_HPP
 #define TSC_SPINBOX_HPP
 
-#include "../core/global_basic.hpp"
-#include "../objects/box.hpp"
-#include "../scripting/objects/boxes/mrb_spinbox.hpp"
-
 namespace TSC {
 
     /* *** *** *** *** *** *** *** *** cSpinBox *** *** *** *** *** *** *** *** *** */
 
-    class cSpinBox : public cBaseBox {
+    class cSpinBox: public cBaseBox {
     public:
         // constructor
-        cSpinBox(cSprite_Manager* sprite_manager);
+        cSpinBox();
         // create from stream
-        cSpinBox(XmlAttributes& attributes, cSprite_Manager* sprite_manager);
+        cSpinBox(XmlAttributes& attributes, cLevel& level, const std::string type_name = "box");
         // destructor
         virtual ~cSpinBox(void);
 
-        // init defaults
-        void Init(void);
-
         // copy
-        virtual cSpinBox* Copy(void) const;
+        // OLD virtual cSpinBox* Copy(void) const;
 
-        // load from stream
-        virtual void Load_From_XML(XmlAttributes& attributes);
+        // OLD // load from savegame
+        // OLD virtual void Load_From_Savegame(cSave_Level_Object* save_object);
+        // OLD // save to savegame
+        // OLD virtual bool Save_To_Savegame_XML_Node(xmlpp::Element* p_element) const;
 
-        // load from savegame
-        virtual void Load_From_Savegame(cSave_Level_Object* save_object);
-        // save to savegame
-        virtual bool Save_To_Savegame_XML_Node(xmlpp::Element* p_element) const;
-
-        // Create the MRuby object for this
-        virtual mrb_value Create_MRuby_Object(mrb_state* p_state)
-        {
-            return mrb_obj_value(Data_Wrap_Struct(p_state, mrb_class_get(p_state, "SpinBox"), &Scripting::rtTSC_Scriptable, this));
-        }
+        // OLD // Create the MRuby object for this
+        // OLD virtual mrb_value Create_MRuby_Object(mrb_state* p_state)
+        // OLD {
+        // OLD     return mrb_obj_value(Data_Wrap_Struct(p_state, mrb_class_get(p_state, "SpinBox"), &Scripting::rtTSC_Scriptable, this));
+        // OLD }
 
         // Activate the Spinning
         virtual void Activate(void);
         // Stop the Spinning
         void Stop(void);
         // update
-        virtual void Update(void);
+        virtual void Update();
 
         // if update is valid for the current state
-        virtual bool Is_Update_Valid(void);
+        // OLD virtual bool Is_Update_Valid(void);
 
         // spin counter
         float m_spin_counter;
@@ -71,10 +61,13 @@ namespace TSC {
         bool m_spin;
 
         // Save below given XML node
-        virtual xmlpp::Element* Save_To_XML_Node(xmlpp::Element* p_element);
+        // OLD virtual xmlpp::Element* Save_To_XML_Node(xmlpp::Element* p_element);
 
     protected:
         // typename inherited
+    private:
+        // init defaults
+        void Init(void);
     };
 
     /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */

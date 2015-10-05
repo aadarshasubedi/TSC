@@ -132,6 +132,7 @@ const ConfiguredTexture& cImage_Manager::Get_Texture(const fs::path& relpath)
         struct ConfiguredTexture* p_conftexture = new ConfiguredTexture;
         p_conftexture->m_texture                = p_texture;
         p_conftexture->m_settings               = p_settings;
+        p_conftexture->m_path                   = finalpath;
 
         m_textures[relpath] = p_conftexture;
         return *p_conftexture;

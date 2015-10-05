@@ -19,6 +19,7 @@ namespace TSC {
     {
     public:
         cAnimatedActor();
+        cAnimatedActor(XmlAttributes& attributes, cLevel& level, const std::string type_name = "animatedsprite");
         virtual ~cAnimatedActor();
 
         virtual void Draw(sf::RenderWindow& stage) const;

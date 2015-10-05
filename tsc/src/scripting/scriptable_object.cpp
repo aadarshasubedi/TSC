@@ -13,6 +13,7 @@
  */
 
 #include "../core/global_basic.hpp"
+#include "../core/global_game.hpp"
 #include "../core/property_helper.hpp"
 #include "scriptable_object.hpp"
 //#include "../level/level.hpp"

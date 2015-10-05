@@ -22,7 +22,7 @@ namespace TSC {
         cLevel_Player();
         virtual ~cLevel_Player();
 
-        virtual bool Handle_Collision(cCollision* p_collision);
+        virtual bool Handle_Collision_Massive(cCollision* p_collision);
 
         // lets the Player halt
         void Hold(void);
@@ -72,10 +72,10 @@ namespace TSC {
         void Update_Staying(void);
         float Get_Vel_Modifier(void) const;
     private:
-        Moving_state m_state;
         ObjectDirection m_direction;
 
     public: // FIXME: Legacy code. Remove this for secrecy principle!
+        Moving_state m_state;
 
         // current Alex type
         Alex_type m_alex_type;
@@ -152,6 +152,10 @@ namespace TSC {
         cAnimatedActor* mp_active_object;
         // direction when ducking started ( for the anti stuck under a block test )
         ObjectDirection m_duck_direction;
+
+        // default position
+        static const float m_default_pos_x;
+        static const float m_default_pos_y;
     };
 }
 

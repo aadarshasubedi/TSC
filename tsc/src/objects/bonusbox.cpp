@@ -14,79 +14,45 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../objects/bonusbox.hpp"
-#include "../objects/star.hpp"
-#include "../gui/hud.hpp"
-#include "../level/level_player.hpp"
-#include "../audio/audio.hpp"
-#include "../core/framerate.hpp"
-#include "../level/level.hpp"
-#include "../level/level_editor.hpp"
-#include "../core/game_core.hpp"
-#include "../objects/goldpiece.hpp"
-#include "../core/sprite_manager.hpp"
-#include "../core/i18n.hpp"
 #include "../core/global_basic.hpp"
+#include "../core/global_game.hpp"
+#include "../core/property_helper.hpp"
+#include "../core/bintree.hpp"
+#include "../core/i18n.hpp"
+#include "../scripting/scriptable_object.hpp"
+#include "../core/file_parser.hpp"
+#include "../video/img_set.hpp"
+#include "../video/img_settings.hpp"
+#include "../video/img_manager.hpp"
+#include "../video/color.hpp"
+#include "../level/level.hpp"
+#include "actor.hpp"
+#include "sprite_actor.hpp"
+#include "animated_actor.hpp"
+#include "../core/collision.hpp"
+#include "../core/errors.hpp"
+#include "../core/xml_attributes.hpp"
+#include "../level/level_player.hpp"
+#include "../core/scene_manager.hpp"
+#include "../core/tsc_app.hpp"
+#include "box.hpp"
+#include "bonusbox.hpp"
 
 using namespace std;
-
-namespace TSC {
+using namespace TSC;
 
 /* *** *** *** *** *** *** *** *** cBonusBox *** *** *** *** *** *** *** *** *** */
 
-cBonusBox::cBonusBox(cSprite_Manager* sprite_manager)
-    : cBaseBox(sprite_manager)
+cBonusBox::cBonusBox()
+    : cBaseBox()
 {
     cBonusBox::Init();
 }
 
-cBonusBox::cBonusBox(XmlAttributes& attributes, cSprite_Manager* sprite_manager)
-    : cBaseBox(sprite_manager)
+cBonusBox::cBonusBox(XmlAttributes& attributes, cLevel& level, const std::string type_name)
+    : cBaseBox(attributes, level, type_name)
 {
     cBonusBox::Init();
-    cBonusBox::Load_From_XML(attributes);
-}
-
-cBonusBox::~cBonusBox(void)
-{
-    for (MovingSpriteList::iterator itr = m_active_items.begin(); itr != m_active_items.end(); ++itr) {
-        delete *itr;
-    }
-
-    m_active_items.clear();
-}
-
-void cBonusBox::Init(void)
-{
-    m_type = TYPE_BONUS_BOX;
-    m_force_best_item = 0;
-    m_camera_range = 5000;
-    m_can_be_on_ground = 0;
-
-    Set_Animation_Type("Bonus");
-    m_gold_color = COL_DEFAULT;
-    Set_Goldcolor(COL_YELLOW);
-
-    box_type = TYPE_UNDEFINED;
-    m_name = _("Bonusbox Empty");
-}
-
-cBonusBox* cBonusBox::Copy(void) const
-{
-    cBonusBox* bonusbox = new cBonusBox(m_sprite_manager);
-    bonusbox->Set_Pos(m_start_pos_x, m_start_pos_y);
-    bonusbox->Set_Animation_Type(m_anim_type);
-    bonusbox->Set_Bonus_Type(box_type);
-    bonusbox->Set_Invisible(m_box_invisible);
-    bonusbox->Set_Force_Best_Item(m_force_best_item);
-    bonusbox->Set_Goldcolor(m_gold_color);
-    bonusbox->Set_Useable_Count(m_start_useable_count, 1);
-    return bonusbox;
-}
-
-void cBonusBox::Load_From_XML(XmlAttributes& attributes)
-{
-    cBaseBox::Load_From_XML(attributes);
 
     // item
     Set_Bonus_Type(static_cast<SpriteType>(string_to_int(attributes["item"])));
@@ -97,18 +63,54 @@ void cBonusBox::Load_From_XML(XmlAttributes& attributes)
         Set_Goldcolor(Get_Color_Id(attributes.fetch("gold_color", Get_Color_Name(m_gold_color))));
 }
 
-xmlpp::Element* cBonusBox::Save_To_XML_Node(xmlpp::Element* p_element)
+cBonusBox::~cBonusBox(void)
 {
-    xmlpp::Element* p_node = cBaseBox::Save_To_XML_Node(p_element);
-
-    // force best possible item
-    Add_Property(p_node, "force_best_item", m_force_best_item);
-    // gold color
-    if (box_type == TYPE_GOLDPIECE)
-        Add_Property(p_node, "gold_color", Get_Color_Name(m_gold_color));
-
-    return p_node;
+    // OLD for (MovingSpriteList::iterator itr = m_active_items.begin(); itr != m_active_items.end(); ++itr) {
+    // OLD     delete *itr;
+    // OLD }
+    // OLD 
+    // OLD m_active_items.clear();
 }
+
+void cBonusBox::Init(void)
+{
+    // OLD m_type = TYPE_BONUS_BOX;
+    m_force_best_item = 0;
+    // OLD m_camera_range = 5000;
+
+    Set_Animation_Type("Bonus");
+    m_gold_color = COL_DEFAULT;
+    Set_Goldcolor(COL_YELLOW);
+
+    box_type = TYPE_UNDEFINED;
+    m_name = "Bonusbox Empty";
+}
+
+// OLD cBonusBox* cBonusBox::Copy(void) const
+// OLD {
+// OLD     cBonusBox* bonusbox = new cBonusBox(m_sprite_manager);
+// OLD     bonusbox->Set_Pos(m_start_pos_x, m_start_pos_y);
+// OLD     bonusbox->Set_Animation_Type(m_anim_type);
+// OLD     bonusbox->Set_Bonus_Type(box_type);
+// OLD     bonusbox->Set_Invisible(m_box_invisible);
+// OLD     bonusbox->Set_Force_Best_Item(m_force_best_item);
+// OLD     bonusbox->Set_Goldcolor(m_gold_color);
+// OLD     bonusbox->Set_Useable_Count(m_start_useable_count, 1);
+// OLD     return bonusbox;
+// OLD }
+
+// OLD xmlpp::Element* cBonusBox::Save_To_XML_Node(xmlpp::Element* p_element)
+// OLD {
+// OLD     xmlpp::Element* p_node = cBaseBox::Save_To_XML_Node(p_element);
+// OLD 
+// OLD     // force best possible item
+// OLD     Add_Property(p_node, "force_best_item", m_force_best_item);
+// OLD     // gold color
+// OLD     if (box_type == TYPE_GOLDPIECE)
+// OLD         Add_Property(p_node, "gold_color", Get_Color_Name(m_gold_color));
+// OLD 
+// OLD     return p_node;
+// OLD }
 
 void cBonusBox::Set_Useable_Count(int count, bool new_startcount /* = 0 */)
 {
@@ -137,52 +139,52 @@ void cBonusBox::Set_Bonus_Type(SpriteType bonus_type)
 
     // set item image
     if (box_type == TYPE_UNDEFINED) {
-        m_item_image = NULL;
+        // OLD m_item_image = NULL;
         m_name = _("Bonusbox Empty");
     }
     else if (box_type == TYPE_POWERUP) {
         // force always best item
         m_force_best_item = 1;
-        m_item_image = pVideo->Get_Package_Surface("game/editor/unknown.png");
+        // OLD m_item_image = pVideo->Get_Package_Surface("game/editor/unknown.png");
     }
     else if (box_type == TYPE_MUSHROOM_DEFAULT) {
-        m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_big.imgset");
+        // OLD m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_big.imgset");
         m_name = _("Bonusbox Berry");
     }
     else if (box_type == TYPE_FIREPLANT) {
-        m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_fire.imgset");
+        // OLD m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_fire.imgset");
         m_name = _("Bonusbox Fire berry");
     }
     else if (box_type == TYPE_MUSHROOM_BLUE) {
-        m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_ice.imgset");
+        // OLD m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_ice.imgset");
         m_name = _("Bonusbox Ice berry");
     }
     else if (box_type == TYPE_MUSHROOM_GHOST) {
-        m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_ghost.imgset");
+        // OLD m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_ghost.imgset");
         m_name = _("Bonusbox Ghost berry");
     }
     else if (box_type == TYPE_MUSHROOM_LIVE_1) {
-        m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_life.imgset");
+        // OLD m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_life.imgset");
         m_name = _("Bonusbox 1-Up berry");
     }
     else if (box_type == TYPE_STAR) {
-        m_item_image = cImageSet::Fetch_Single_Image("game/items/lemon.imgset");
+        // OLD m_item_image = cImageSet::Fetch_Single_Image("game/items/lemon.imgset");
         m_name = _("Bonusbox Lemon");
     }
     else if (box_type == TYPE_GOLDPIECE) {
         if (m_gold_color == COL_RED) {
-            m_item_image = cImageSet::Fetch_Single_Image("game/items/goldpiece/red/jewel.imgset");
+            // OLD m_item_image = cImageSet::Fetch_Single_Image("game/items/goldpiece/red/jewel.imgset");
         }
         else {
-            m_item_image = cImageSet::Fetch_Single_Image("game/items/goldpiece/yellow/jewel.imgset");
+            // OLD m_item_image = cImageSet::Fetch_Single_Image("game/items/goldpiece/yellow/jewel.imgset");
         }
     }
     else if (box_type == TYPE_MUSHROOM_POISON) {
-        m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_poison.imgset");
+        // OLD m_item_image = cImageSet::Fetch_Single_Image("game/items/berry_poison.imgset");
         m_name = _("Bonusbox Poisonous berry");
     }
     else {
-        m_item_image = NULL;
+        // OLD m_item_image = NULL;
         cerr << "Error : Unknown BonusBox Item type : " << box_type << endl;
     }
 }
@@ -226,11 +228,11 @@ void cBonusBox::Set_Goldcolor(DefaultColor new_color)
     }
 
     if (m_gold_color == COL_YELLOW) {
-        m_item_image = cImageSet::Fetch_Single_Image("game/items/goldpiece/yellow/jewel.imgset");
+        // OLD m_item_image = cImageSet::Fetch_Single_Image("game/items/goldpiece/yellow/jewel.imgset");
         m_name = _("Bonusbox Jewel");
     }
     else if (m_gold_color == COL_RED) {
-        m_item_image = cImageSet::Fetch_Single_Image("game/items/goldpiece/red/jewel.imgset");
+        // OLD m_item_image = cImageSet::Fetch_Single_Image("game/items/goldpiece/red/jewel.imgset");
         m_name = _("Bonusbox Red Jewel");
     }
     else {
@@ -268,67 +270,68 @@ void cBonusBox::Activate(void)
     }
 
     Alex_type current_alex_type;
+    const cLevel_Player* p_player = gp_current_level->Get_Player();
 
     // use original type
-    if (pLevel_Player->m_alex_type == ALEX_GHOST) {
-        current_alex_type = pLevel_Player->m_alex_type_temp_power;
+    if (p_player->m_alex_type == ALEX_GHOST) {
+        // OLD current_alex_type = p_player->m_alex_type_temp_power;
     }
     // already using original type
     else {
-        current_alex_type = pLevel_Player->m_alex_type;
+        current_alex_type = p_player->m_alex_type;
     }
 
     // the item from this box
-    cMovingSprite* box_item = NULL;
+    cActor* box_item = NULL;
 
-    // no item
-    if (box_type == TYPE_UNDEFINED) {
-        pAudio->Play_Sound("item/empty_box.wav");
-    }
-    // check if lower item should be used if no force best item
-    else if (!m_force_best_item && (box_type == TYPE_FIREPLANT || box_type == TYPE_MUSHROOM_BLUE) &&
-             (current_alex_type == ALEX_SMALL || ((current_alex_type == ALEX_FIRE || current_alex_type == ALEX_ICE) && !pHud_Itembox->m_item_id))) {
-        pAudio->Play_Sound("sprout_1.ogg");
-
-        cMushroom* mushroom = new cMushroom(m_sprite_manager);
-        mushroom->Set_Pos(m_start_pos_x - ((m_item_image->m_w - m_rect.m_w) / 2), m_start_pos_y - ((m_item_image->m_h - m_rect.m_h) / 2), 1);
-        box_item = static_cast<cMovingSprite*>(mushroom);
-    }
-    else if (box_type == TYPE_FIREPLANT) {
-        pAudio->Play_Sound("sprout_1.ogg");
-        box_item = static_cast<cMovingSprite*>(new cFirePlant(m_sprite_manager));
-        box_item->Set_Pos(m_start_pos_x - ((m_item_image->m_w - m_rect.m_w) / 2), m_start_pos_y, 1);
-    }
-    else if (box_type == TYPE_MUSHROOM_DEFAULT || box_type == TYPE_MUSHROOM_LIVE_1 || box_type == TYPE_MUSHROOM_POISON || box_type == TYPE_MUSHROOM_BLUE || box_type == TYPE_MUSHROOM_GHOST) {
-        pAudio->Play_Sound("sprout_1.ogg");
-
-        cMushroom* mushroom = new cMushroom(m_sprite_manager);
-        mushroom->Set_Pos(m_start_pos_x - ((m_item_image->m_w - m_rect.m_w) / 2), m_start_pos_y - ((m_item_image->m_h - m_rect.m_h) / 2), 1);
-        mushroom->Set_Type(box_type);
-        box_item = static_cast<cMovingSprite*>(mushroom);
-    }
-    else if (box_type == TYPE_STAR) {
-        pAudio->Play_Sound("sprout_1.ogg");
-        cjStar* star = new cjStar(m_sprite_manager);
-        star->Set_Pos(m_start_pos_x - ((m_item_image->m_w - m_rect.m_w) / 2), m_start_pos_y, 1);
-        star->Set_On_Top(this);
-        star->Set_Spawned(1);
-        // add to global objects
-        m_sprite_manager->Add(star);
-    }
-    else if (box_type == TYPE_GOLDPIECE) {
-        pAudio->Play_Sound("item/jewel_1.ogg");
-
-        cJGoldpiece* goldpiece = new cJGoldpiece(m_sprite_manager);
-        goldpiece->Set_Pos(m_start_pos_x - ((m_item_image->m_w - m_rect.m_w) / 2), m_pos_y, 1);
-        goldpiece->Set_Gold_Color(m_gold_color);
-        // add to global objects
-        m_sprite_manager->Add(goldpiece);
-    }
-    else {
-        cerr << "Error : Unknown bonusbox item type " << box_type << endl;
-        return;
-    }
+    // OLD // no item
+    // OLD if (box_type == TYPE_UNDEFINED) {
+    // OLD     // OLD pAudio->Play_Sound("item/empty_box.wav");
+    // OLD }
+    // OLD // check if lower item should be used if no force best item
+    // OLD else if (!m_force_best_item && (box_type == TYPE_FIREPLANT || box_type == TYPE_MUSHROOM_BLUE) &&
+    // OLD          (current_alex_type == ALEX_SMALL || ((current_alex_type == ALEX_FIRE || current_alex_type == ALEX_ICE) /* OLD && !pHud_Itembox->m_item_id */))) {
+    // OLD     // OLD pAudio->Play_Sound("sprout_1.ogg");
+    // OLD 
+    // OLD     cMushroom* mushroom = new cMushroom(m_sprite_manager);
+    // OLD     mushroom->Set_Pos(m_start_pos_x - ((m_item_image->m_w - m_rect.m_w) / 2), m_start_pos_y - ((m_item_image->m_h - m_rect.m_h) / 2), 1);
+    // OLD     box_item = static_cast<cMovingSprite*>(mushroom);
+    // OLD }
+    // OLD else if (box_type == TYPE_FIREPLANT) {
+    // OLD     pAudio->Play_Sound("sprout_1.ogg");
+    // OLD     box_item = static_cast<cMovingSprite*>(new cFirePlant(m_sprite_manager));
+    // OLD     box_item->Set_Pos(m_start_pos_x - ((m_item_image->m_w - m_rect.m_w) / 2), m_start_pos_y, 1);
+    // OLD }
+    // OLD else if (box_type == TYPE_MUSHROOM_DEFAULT || box_type == TYPE_MUSHROOM_LIVE_1 || box_type == TYPE_MUSHROOM_POISON || box_type == TYPE_MUSHROOM_BLUE || box_type == TYPE_MUSHROOM_GHOST) {
+    // OLD     pAudio->Play_Sound("sprout_1.ogg");
+    // OLD 
+    // OLD     cMushroom* mushroom = new cMushroom(m_sprite_manager);
+    // OLD     mushroom->Set_Pos(m_start_pos_x - ((m_item_image->m_w - m_rect.m_w) / 2), m_start_pos_y - ((m_item_image->m_h - m_rect.m_h) / 2), 1);
+    // OLD     mushroom->Set_Type(box_type);
+    // OLD     box_item = static_cast<cMovingSprite*>(mushroom);
+    // OLD }
+    // OLD else if (box_type == TYPE_STAR) {
+    // OLD     pAudio->Play_Sound("sprout_1.ogg");
+    // OLD     cjStar* star = new cjStar(m_sprite_manager);
+    // OLD     star->Set_Pos(m_start_pos_x - ((m_item_image->m_w - m_rect.m_w) / 2), m_start_pos_y, 1);
+    // OLD     star->Set_On_Top(this);
+    // OLD     star->Set_Spawned(1);
+    // OLD     // add to global objects
+    // OLD     m_sprite_manager->Add(star);
+    // OLD }
+    // OLD else if (box_type == TYPE_GOLDPIECE) {
+    // OLD     pAudio->Play_Sound("item/jewel_1.ogg");
+    // OLD 
+    // OLD     cJGoldpiece* goldpiece = new cJGoldpiece(m_sprite_manager);
+    // OLD     goldpiece->Set_Pos(m_start_pos_x - ((m_item_image->m_w - m_rect.m_w) / 2), m_pos_y, 1);
+    // OLD     goldpiece->Set_Gold_Color(m_gold_color);
+    // OLD     // add to global objects
+    // OLD     m_sprite_manager->Add(goldpiece);
+    // OLD }
+    // OLD else {
+    // OLD     cerr << "Error : Unknown bonusbox item type " << box_type << endl;
+    // OLD     return;
+    // OLD }
 
     // set back random state
     if (random) {
@@ -342,286 +345,277 @@ void cBonusBox::Activate(void)
         box_item->Set_Spawned(1);
 
         // add to item list
-        m_active_items.push_back(box_item);
+        // OLD m_active_items.push_back(box_item);
         Update_Valid_Update();
     }
 }
 
 void cBonusBox::Update(void)
 {
-    if (!m_valid_update || !Is_In_Range()) {
-        return;
-    }
-
     // update active items
-    for (MovingSpriteList::iterator itr = m_active_items.begin(); itr != m_active_items.end();) {
-        cPowerUp* powerup = static_cast<cPowerUp*>(*itr);
-
-        if (!powerup->m_active) {
-            ++itr;
-            continue;
-        }
-
-        float diff = powerup->m_pos_y - (m_pos_y - powerup->m_col_rect.m_h - powerup->m_col_pos.m_y);
-
-        // position over the box reached
-        if (diff < 0.0f) {
-            // clear animation counter
-            powerup->m_counter = 0.0f;
-
-            // set powerup default posz
-            powerup->m_pos_z = 0.05f;
-
-            // set the item on top
-            powerup->Set_On_Top(this, 0);
-            // add the item to the level objects
-            m_sprite_manager->Add(powerup);
-
-            // remove from array
-            itr = m_active_items.erase(itr);
-            Update_Valid_Update();
-        }
-        // move upwards
-        else {
-            powerup->m_counter += pFramerate->m_speed_factor;
-            powerup->Move(0.0f, -1.0f - (diff * 0.1f));
-
-            ++itr;
-        }
-    }
+    // OLD for (MovingSpriteList::iterator itr = m_active_items.begin(); itr != m_active_items.end();) {
+    // OLD     cPowerUp* powerup = static_cast<cPowerUp*>(*itr);
+    // OLD 
+    // OLD     if (!powerup->m_active) {
+    // OLD         ++itr;
+    // OLD         continue;
+    // OLD     }
+    // OLD 
+    // OLD     float diff = powerup->m_pos_y - (m_pos_y - powerup->m_col_rect.m_h - powerup->m_col_pos.m_y);
+    // OLD 
+    // OLD     // position over the box reached
+    // OLD     if (diff < 0.0f) {
+    // OLD         // clear animation counter
+    // OLD         powerup->m_counter = 0.0f;
+    // OLD 
+    // OLD         // set powerup default posz
+    // OLD         powerup->m_pos_z = 0.05f;
+    // OLD 
+    // OLD         // set the item on top
+    // OLD         powerup->Set_On_Top(this, 0);
+    // OLD         // add the item to the level objects
+    // OLD         m_sprite_manager->Add(powerup);
+    // OLD 
+    // OLD         // remove from array
+    // OLD         itr = m_active_items.erase(itr);
+    // OLD         Update_Valid_Update();
+    // OLD     }
+    // OLD     // move upwards
+    // OLD     else {
+    // OLD         powerup->m_counter += pFramerate->m_speed_factor;
+    // OLD         powerup->Move(0.0f, -1.0f - (diff * 0.1f));
+    // OLD 
+    // OLD         ++itr;
+    // OLD     }
+    // OLD }
 
     cBaseBox::Update();
 }
 
-void cBonusBox::Draw(cSurface_Request* request /* = NULL */)
+void cBonusBox::Draw(sf::RenderWindow& stage) const
 {
-    if (!m_valid_draw) {
-        return;
-    }
+    // OLD for (MovingSpriteList::iterator itr = m_active_items.begin(); itr != m_active_items.end(); ++itr) {
+    // OLD     cMovingSprite* obj = (*itr);
+    // OLD 
+    // OLD     if (!obj->m_active) {
+    // OLD         continue;
+    // OLD     }
+    // OLD 
+    // OLD     obj->Draw();
+    // OLD }
 
-    for (MovingSpriteList::iterator itr = m_active_items.begin(); itr != m_active_items.end(); ++itr) {
-        cMovingSprite* obj = (*itr);
-
-        if (!obj->m_active) {
-            continue;
-        }
-
-        obj->Draw();
-    }
-
-    cBaseBox::Draw(request);
+    cBaseBox::Draw(stage);
 }
 
-bool cBonusBox::Is_Update_Valid()
-{
-    // if item is in animation
-    if (!m_active_items.empty()) {
-        return 1;
-    }
+// OLD bool cBonusBox::Is_Update_Valid()
+// OLD {
+// OLD     // OLD // if item is in animation
+// OLD     // OLD if (!m_active_items.empty()) {
+// OLD     // OLD     return 1;
+// OLD     // OLD }
+// OLD 
+// OLD     return cBaseBox::Is_Update_Valid();
+// OLD }
 
-    return cBaseBox::Is_Update_Valid();
-}
-
-void cBonusBox::Editor_Activate(void)
-{
-    // BaseBox Settings first
-    cBaseBox::Editor_Activate();
-
-    // get window manager
-    CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
-
-    // Animation
-    CEGUI::Combobox* combobox = static_cast<CEGUI::Combobox*>(wmgr.createWindow("TaharezLook/Combobox", "editor_bonusbox_animation"));
-    Editor_Add(UTF8_("Animation"), UTF8_("Use the Power animation if the box has a good or needed item for this level"), combobox, 120, 100);
-
-    combobox->addItem(new CEGUI::ListboxTextItem("Default"));
-    combobox->addItem(new CEGUI::ListboxTextItem("Bonus"));
-    combobox->addItem(new CEGUI::ListboxTextItem("Power"));
-
-    combobox->setText(reinterpret_cast<const CEGUI::utf8*>(m_anim_type.c_str()));
-
-    combobox->subscribeEvent(CEGUI::Combobox::EventListSelectionAccepted, CEGUI::Event::Subscriber(&cBonusBox::Editor_Animation_Select, this));
-
-    // Item
-    combobox = static_cast<CEGUI::Combobox*>(wmgr.createWindow("TaharezLook/Combobox", "editor_bonusbox_item"));
-    Editor_Add(UTF8_("Item"), UTF8_("The item that gets spawned"), combobox, 160, 140);
-
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Empty")));
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Random")));
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Berry")));
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Fire berry")));
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Ice berry")));
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Ghost berry")));
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("1-UP berry")));
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Lemon")));
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Jewel")));
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Poisonous berry")));
-
-    if (box_type == TYPE_MUSHROOM_DEFAULT) {
-        combobox->setText(UTF8_("Berry"));
-    }
-    else if (box_type == TYPE_FIREPLANT) {
-        combobox->setText(UTF8_("Fire berry"));
-    }
-    else if (box_type == TYPE_MUSHROOM_BLUE) {
-        combobox->setText(UTF8_("Ice berry"));
-    }
-    else if (box_type == TYPE_MUSHROOM_GHOST) {
-        combobox->setText(UTF8_("Ghost berry"));
-    }
-    else if (box_type == TYPE_MUSHROOM_LIVE_1) {
-        combobox->setText(UTF8_("1-UP berry"));
-    }
-    else if (box_type == TYPE_STAR) {
-        combobox->setText(UTF8_("Lemon"));
-    }
-    else if (box_type == TYPE_GOLDPIECE) {
-        combobox->setText(UTF8_("Jewel"));
-    }
-    else if (box_type == TYPE_MUSHROOM_POISON) {
-        combobox->setText(UTF8_("Poisonous berry"));
-    }
-    else if (box_type == TYPE_POWERUP) {
-        combobox->setText(UTF8_("Random"));
-    }
-    else {
-        combobox->setText(UTF8_("Empty"));
-    }
-
-    combobox->subscribeEvent(CEGUI::Combobox::EventListSelectionAccepted, CEGUI::Event::Subscriber(&cBonusBox::Editor_Item_Select, this));
-
-    // Force best item
-    combobox = static_cast<CEGUI::Combobox*>(wmgr.createWindow("TaharezLook/Combobox", "editor_bonusbox_force_best_item"));
-    Editor_Add(UTF8_("Force item"), UTF8_("Force best available item when activated"), combobox, 120, 80);
-
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Enabled")));
-    combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Disabled")));
-
-    if (m_force_best_item) {
-        combobox->setText(UTF8_("Enabled"));
-    }
-    else {
-        combobox->setText(UTF8_("Disabled"));
-    }
-
-    combobox->subscribeEvent(CEGUI::Combobox::EventListSelectionAccepted, CEGUI::Event::Subscriber(&cBonusBox::Editor_Force_best_item_Select, this));
-
-    // gold color
-    combobox = static_cast<CEGUI::Combobox*>(wmgr.createWindow("TaharezLook/Combobox", "editor_bonusbox_gold_color"));
-    Editor_Add(UTF8_("Jewel color"), UTF8_("Jewel color if the item is a jewel"), combobox, 100, 80);
-
-    combobox->addItem(new CEGUI::ListboxTextItem("yellow"));
-    combobox->addItem(new CEGUI::ListboxTextItem("red"));
-    combobox->setText(Get_Color_Name(m_gold_color));
-
-    combobox->subscribeEvent(CEGUI::Combobox::EventListSelectionAccepted, CEGUI::Event::Subscriber(&cBonusBox::Editor_Gold_Color_Select, this));
-
-    // init
-    Editor_Init();
-}
-
-void cBonusBox::Editor_State_Update(void)
-{
-    CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
-
-    // Force best item
-    CEGUI::Combobox* combobox = static_cast<CEGUI::Combobox*>(wmgr.getWindow("editor_bonusbox_force_best_item"));
-
-    if (box_type == TYPE_UNDEFINED || box_type == TYPE_POWERUP || box_type == TYPE_MUSHROOM_DEFAULT || box_type == TYPE_MUSHROOM_LIVE_1 || box_type == TYPE_MUSHROOM_POISON ||
-            box_type == TYPE_MUSHROOM_GHOST || box_type == TYPE_STAR || box_type == TYPE_GOLDPIECE) {
-        combobox->setEnabled(0);
-    }
-    else {
-        combobox->setEnabled(1);
-    }
-
-    // gold color
-    combobox = static_cast<CEGUI::Combobox*>(wmgr.getWindow("editor_bonusbox_gold_color"));
-
-    if (box_type != TYPE_GOLDPIECE) {
-        combobox->setEnabled(0);
-    }
-    else {
-        combobox->setEnabled(1);
-    }
-}
-
-bool cBonusBox::Editor_Animation_Select(const CEGUI::EventArgs& event)
-{
-    const CEGUI::WindowEventArgs& windowEventArgs = static_cast<const CEGUI::WindowEventArgs&>(event);
-    CEGUI::ListboxItem* item = static_cast<CEGUI::Combobox*>(windowEventArgs.window)->getSelectedItem();
-
-    Set_Animation_Type(item->getText().c_str());
-
-    return 1;
-}
-
-bool cBonusBox::Editor_Item_Select(const CEGUI::EventArgs& event)
-{
-    const CEGUI::WindowEventArgs& windowEventArgs = static_cast<const CEGUI::WindowEventArgs&>(event);
-    CEGUI::ListboxItem* item = static_cast<CEGUI::Combobox*>(windowEventArgs.window)->getSelectedItem();
-
-    if (item->getText().compare(UTF8_("Berry")) == 0) {
-        Set_Bonus_Type(TYPE_MUSHROOM_DEFAULT);
-    }
-    else if (item->getText().compare(UTF8_("Fire berry")) == 0) {
-        Set_Bonus_Type(TYPE_FIREPLANT);
-    }
-    else if (item->getText().compare(UTF8_("Ice berry")) == 0) {
-        Set_Bonus_Type(TYPE_MUSHROOM_BLUE);
-    }
-    else if (item->getText().compare(UTF8_("Ghost berry")) == 0) {
-        Set_Bonus_Type(TYPE_MUSHROOM_GHOST);
-    }
-    else if (item->getText().compare(UTF8_("1-UP berry")) == 0) {
-        Set_Bonus_Type(TYPE_MUSHROOM_LIVE_1);
-    }
-    else if (item->getText().compare(UTF8_("Lemon")) == 0) {
-        Set_Bonus_Type(TYPE_STAR);
-    }
-    else if (item->getText().compare(UTF8_("Jewel")) == 0) {
-        Set_Bonus_Type(TYPE_GOLDPIECE);
-    }
-    else if (item->getText().compare(UTF8_("Poisonous berry")) == 0) {
-        Set_Bonus_Type(TYPE_MUSHROOM_POISON);
-    }
-    else if (item->getText().compare(UTF8_("Random")) == 0) {
-        Set_Bonus_Type(TYPE_POWERUP);
-    }
-    else {
-        Set_Bonus_Type(TYPE_UNDEFINED);
-    }
-
-    Editor_State_Update();
-
-    return 1;
-}
-
-bool cBonusBox::Editor_Force_best_item_Select(const CEGUI::EventArgs& event)
-{
-    const CEGUI::WindowEventArgs& windowEventArgs = static_cast<const CEGUI::WindowEventArgs&>(event);
-    CEGUI::ListboxItem* item = static_cast<CEGUI::Combobox*>(windowEventArgs.window)->getSelectedItem();
-
-    if (item->getText().compare(UTF8_("Enabled")) == 0) {
-        Set_Force_Best_Item(1);
-    }
-    else {
-        Set_Force_Best_Item(0);
-    }
-
-    return 1;
-}
-
-bool cBonusBox::Editor_Gold_Color_Select(const CEGUI::EventArgs& event)
-{
-    const CEGUI::WindowEventArgs& windowEventArgs = static_cast<const CEGUI::WindowEventArgs&>(event);
-    CEGUI::ListboxItem* item = static_cast<CEGUI::Combobox*>(windowEventArgs.window)->getSelectedItem();
-
-    Set_Goldcolor(Get_Color_Id(item->getText().c_str()));
-
-    return 1;
-}
+// OLD void cBonusBox::Editor_Activate(void)
+// OLD {
+// OLD     // BaseBox Settings first
+// OLD     cBaseBox::Editor_Activate();
+// OLD 
+// OLD     // get window manager
+// OLD     CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
+// OLD 
+// OLD     // Animation
+// OLD     CEGUI::Combobox* combobox = static_cast<CEGUI::Combobox*>(wmgr.createWindow("TaharezLook/Combobox", "editor_bonusbox_animation"));
+// OLD     Editor_Add(UTF8_("Animation"), UTF8_("Use the Power animation if the box has a good or needed item for this level"), combobox, 120, 100);
+// OLD 
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem("Default"));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem("Bonus"));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem("Power"));
+// OLD 
+// OLD     combobox->setText(reinterpret_cast<const CEGUI::utf8*>(m_anim_type.c_str()));
+// OLD 
+// OLD     combobox->subscribeEvent(CEGUI::Combobox::EventListSelectionAccepted, CEGUI::Event::Subscriber(&cBonusBox::Editor_Animation_Select, this));
+// OLD 
+// OLD     // Item
+// OLD     combobox = static_cast<CEGUI::Combobox*>(wmgr.createWindow("TaharezLook/Combobox", "editor_bonusbox_item"));
+// OLD     Editor_Add(UTF8_("Item"), UTF8_("The item that gets spawned"), combobox, 160, 140);
+// OLD 
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Empty")));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Random")));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Berry")));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Fire berry")));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Ice berry")));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Ghost berry")));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("1-UP berry")));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Lemon")));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Jewel")));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Poisonous berry")));
+// OLD 
+// OLD     if (box_type == TYPE_MUSHROOM_DEFAULT) {
+// OLD         combobox->setText(UTF8_("Berry"));
+// OLD     }
+// OLD     else if (box_type == TYPE_FIREPLANT) {
+// OLD         combobox->setText(UTF8_("Fire berry"));
+// OLD     }
+// OLD     else if (box_type == TYPE_MUSHROOM_BLUE) {
+// OLD         combobox->setText(UTF8_("Ice berry"));
+// OLD     }
+// OLD     else if (box_type == TYPE_MUSHROOM_GHOST) {
+// OLD         combobox->setText(UTF8_("Ghost berry"));
+// OLD     }
+// OLD     else if (box_type == TYPE_MUSHROOM_LIVE_1) {
+// OLD         combobox->setText(UTF8_("1-UP berry"));
+// OLD     }
+// OLD     else if (box_type == TYPE_STAR) {
+// OLD         combobox->setText(UTF8_("Lemon"));
+// OLD     }
+// OLD     else if (box_type == TYPE_GOLDPIECE) {
+// OLD         combobox->setText(UTF8_("Jewel"));
+// OLD     }
+// OLD     else if (box_type == TYPE_MUSHROOM_POISON) {
+// OLD         combobox->setText(UTF8_("Poisonous berry"));
+// OLD     }
+// OLD     else if (box_type == TYPE_POWERUP) {
+// OLD         combobox->setText(UTF8_("Random"));
+// OLD     }
+// OLD     else {
+// OLD         combobox->setText(UTF8_("Empty"));
+// OLD     }
+// OLD 
+// OLD     combobox->subscribeEvent(CEGUI::Combobox::EventListSelectionAccepted, CEGUI::Event::Subscriber(&cBonusBox::Editor_Item_Select, this));
+// OLD 
+// OLD     // Force best item
+// OLD     combobox = static_cast<CEGUI::Combobox*>(wmgr.createWindow("TaharezLook/Combobox", "editor_bonusbox_force_best_item"));
+// OLD     Editor_Add(UTF8_("Force item"), UTF8_("Force best available item when activated"), combobox, 120, 80);
+// OLD 
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Enabled")));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem(UTF8_("Disabled")));
+// OLD 
+// OLD     if (m_force_best_item) {
+// OLD         combobox->setText(UTF8_("Enabled"));
+// OLD     }
+// OLD     else {
+// OLD         combobox->setText(UTF8_("Disabled"));
+// OLD     }
+// OLD 
+// OLD     combobox->subscribeEvent(CEGUI::Combobox::EventListSelectionAccepted, CEGUI::Event::Subscriber(&cBonusBox::Editor_Force_best_item_Select, this));
+// OLD 
+// OLD     // gold color
+// OLD     combobox = static_cast<CEGUI::Combobox*>(wmgr.createWindow("TaharezLook/Combobox", "editor_bonusbox_gold_color"));
+// OLD     Editor_Add(UTF8_("Jewel color"), UTF8_("Jewel color if the item is a jewel"), combobox, 100, 80);
+// OLD 
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem("yellow"));
+// OLD     combobox->addItem(new CEGUI::ListboxTextItem("red"));
+// OLD     combobox->setText(Get_Color_Name(m_gold_color));
+// OLD 
+// OLD     combobox->subscribeEvent(CEGUI::Combobox::EventListSelectionAccepted, CEGUI::Event::Subscriber(&cBonusBox::Editor_Gold_Color_Select, this));
+// OLD 
+// OLD     // init
+// OLD     Editor_Init();
+// OLD }
+// OLD 
+// OLD void cBonusBox::Editor_State_Update(void)
+// OLD {
+// OLD     CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
+// OLD 
+// OLD     // Force best item
+// OLD     CEGUI::Combobox* combobox = static_cast<CEGUI::Combobox*>(wmgr.getWindow("editor_bonusbox_force_best_item"));
+// OLD 
+// OLD     if (box_type == TYPE_UNDEFINED || box_type == TYPE_POWERUP || box_type == TYPE_MUSHROOM_DEFAULT || box_type == TYPE_MUSHROOM_LIVE_1 || box_type == TYPE_MUSHROOM_POISON ||
+// OLD             box_type == TYPE_MUSHROOM_GHOST || box_type == TYPE_STAR || box_type == TYPE_GOLDPIECE) {
+// OLD         combobox->setEnabled(0);
+// OLD     }
+// OLD     else {
+// OLD         combobox->setEnabled(1);
+// OLD     }
+// OLD 
+// OLD     // gold color
+// OLD     combobox = static_cast<CEGUI::Combobox*>(wmgr.getWindow("editor_bonusbox_gold_color"));
+// OLD 
+// OLD     if (box_type != TYPE_GOLDPIECE) {
+// OLD         combobox->setEnabled(0);
+// OLD     }
+// OLD     else {
+// OLD         combobox->setEnabled(1);
+// OLD     }
+// OLD }
+// OLD 
+// OLD bool cBonusBox::Editor_Animation_Select(const CEGUI::EventArgs& event)
+// OLD {
+// OLD     const CEGUI::WindowEventArgs& windowEventArgs = static_cast<const CEGUI::WindowEventArgs&>(event);
+// OLD     CEGUI::ListboxItem* item = static_cast<CEGUI::Combobox*>(windowEventArgs.window)->getSelectedItem();
+// OLD 
+// OLD     Set_Animation_Type(item->getText().c_str());
+// OLD 
+// OLD     return 1;
+// OLD }
+// OLD 
+// OLD bool cBonusBox::Editor_Item_Select(const CEGUI::EventArgs& event)
+// OLD {
+// OLD     const CEGUI::WindowEventArgs& windowEventArgs = static_cast<const CEGUI::WindowEventArgs&>(event);
+// OLD     CEGUI::ListboxItem* item = static_cast<CEGUI::Combobox*>(windowEventArgs.window)->getSelectedItem();
+// OLD 
+// OLD     if (item->getText().compare(UTF8_("Berry")) == 0) {
+// OLD         Set_Bonus_Type(TYPE_MUSHROOM_DEFAULT);
+// OLD     }
+// OLD     else if (item->getText().compare(UTF8_("Fire berry")) == 0) {
+// OLD         Set_Bonus_Type(TYPE_FIREPLANT);
+// OLD     }
+// OLD     else if (item->getText().compare(UTF8_("Ice berry")) == 0) {
+// OLD         Set_Bonus_Type(TYPE_MUSHROOM_BLUE);
+// OLD     }
+// OLD     else if (item->getText().compare(UTF8_("Ghost berry")) == 0) {
+// OLD         Set_Bonus_Type(TYPE_MUSHROOM_GHOST);
+// OLD     }
+// OLD     else if (item->getText().compare(UTF8_("1-UP berry")) == 0) {
+// OLD         Set_Bonus_Type(TYPE_MUSHROOM_LIVE_1);
+// OLD     }
+// OLD     else if (item->getText().compare(UTF8_("Lemon")) == 0) {
+// OLD         Set_Bonus_Type(TYPE_STAR);
+// OLD     }
+// OLD     else if (item->getText().compare(UTF8_("Jewel")) == 0) {
+// OLD         Set_Bonus_Type(TYPE_GOLDPIECE);
+// OLD     }
+// OLD     else if (item->getText().compare(UTF8_("Poisonous berry")) == 0) {
+// OLD         Set_Bonus_Type(TYPE_MUSHROOM_POISON);
+// OLD     }
+// OLD     else if (item->getText().compare(UTF8_("Random")) == 0) {
+// OLD         Set_Bonus_Type(TYPE_POWERUP);
+// OLD     }
+// OLD     else {
+// OLD         Set_Bonus_Type(TYPE_UNDEFINED);
+// OLD     }
+// OLD 
+// OLD     Editor_State_Update();
+// OLD 
+// OLD     return 1;
+// OLD }
+// OLD 
+// OLD bool cBonusBox::Editor_Force_best_item_Select(const CEGUI::EventArgs& event)
+// OLD {
+// OLD     const CEGUI::WindowEventArgs& windowEventArgs = static_cast<const CEGUI::WindowEventArgs&>(event);
+// OLD     CEGUI::ListboxItem* item = static_cast<CEGUI::Combobox*>(windowEventArgs.window)->getSelectedItem();
+// OLD 
+// OLD     if (item->getText().compare(UTF8_("Enabled")) == 0) {
+// OLD         Set_Force_Best_Item(1);
+// OLD     }
+// OLD     else {
+// OLD         Set_Force_Best_Item(0);
+// OLD     }
+// OLD 
+// OLD     return 1;
+// OLD }
+// OLD 
+// OLD bool cBonusBox::Editor_Gold_Color_Select(const CEGUI::EventArgs& event)
+// OLD {
+// OLD     const CEGUI::WindowEventArgs& windowEventArgs = static_cast<const CEGUI::WindowEventArgs&>(event);
+// OLD     CEGUI::ListboxItem* item = static_cast<CEGUI::Combobox*>(windowEventArgs.window)->getSelectedItem();
+// OLD 
+// OLD     Set_Goldcolor(Get_Color_Id(item->getText().c_str()));
+// OLD 
+// OLD     return 1;
+// OLD }
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-} // namespace TSC

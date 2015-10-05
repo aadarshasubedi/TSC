@@ -312,11 +312,17 @@ set(tsc_sources
 
   "src/level/level.cpp"
   "src/level/level_player.cpp"
+  "src/level/level_loader.cpp"
 
   "src/objects/actor.cpp"
   "src/objects/sprite_actor.cpp"
   "src/objects/static_actor.cpp"
   "src/objects/animated_actor.cpp"
+  "src/objects/enemystopper.cpp"
+  "src/objects/box.cpp"
+  "src/objects/bonusbox.cpp"
+  "src/objects/spinbox.cpp"
+  "src/objects/text_box.cpp"
 
   "src/scenes/scene.cpp"
   "src/scenes/level_scene.cpp"
@@ -327,6 +333,7 @@ set(tsc_sources
   "src/user/preferences_loader.cpp"
   "src/user/preferences.cpp"
 
+  "src/video/color.hpp"
   "src/video/img_manager.cpp"
   "src/video/img_settings.cpp"
   "src/video/img_set.cpp"

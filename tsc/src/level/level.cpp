@@ -16,6 +16,11 @@
 #include "../video/img_manager.hpp"
 #include "../user/preferences.hpp"
 #include "../core/tsc_app.hpp"
+#include "../core/errors.hpp"
+#include "../core/xml_attributes.hpp"
+#include "../core/filesystem/filesystem.hpp"
+#include "../core/filesystem/package_manager.hpp"
+#include "level_loader.hpp"
 #include "level.hpp"
 
 using namespace TSC;
@@ -38,17 +43,50 @@ cLevel* TSC::gp_current_level = NULL;
  *
  * \returns The loaded level.
  */
-cLevel* cLevel::Load_From_File(fs::path levelfile)
+cLevel* cLevel::Load_From_File(fs::path filename)
 {
-    // TODO
-    return NULL;
+    if (filename.empty())
+        throw(InvalidLevelError("Empty level filename!"));
+    if (!File_Exists(filename)) {
+        std::string msg = "Level file not found: " + path_to_utf8(filename);
+        throw (InvalidLevelError(msg));
+    }
+
+    // This is our loader
+    cLevelLoader loader;
+
+    // supported level format
+    if (filename.extension() == fs::path(".tsclvl")  || filename.extension() == fs::path(".smclvl")) {
+        loader.parse_file(filename);
+    }
+    else { // old, unsupported level format
+        // OLD pHud_Debug->Set_Text(_("Unsupported Level format : ") + (const std::string)path_to_utf8(filename));
+        return NULL;
+    }
+
+    // Our level
+    cLevel* p_level = loader.Get_Level();
+
+    // FIXME: Move this into cLevelLoader::on_end_document()
+    /* late initialization
+     * needed to create links to other objects
+    */
+    for(std::vector<cActor*>::iterator itr = p_level->m_actors.begin(); itr != p_level->m_actors.end(); ++itr) {
+        cActor* obj = (*itr);
+
+        obj->Init_Links();
+    }
+
+    debug_print("Loaded level: %s\n", path_to_utf8(p_level->m_level_filename).c_str());
+
+    return p_level;
 }
 
 #ifdef _DEBUG
 cLevel* cLevel::Construct_Debugging_Level()
 {
     cLevel* p_level = new cLevel();
-    p_level->m_levelfile = utf8_to_path("/tmp/debugging.tsclvl");
+    p_level->m_level_filename = utf8_to_path("/tmp/debugging.tsclvl");
 
     cLevel_Player* p_player = new cLevel_Player();
     p_player->setPosition(50, -100);
@@ -115,9 +153,9 @@ cLevel::~cLevel()
  */
 void cLevel::Init()
 {
-    m_engine_version = 47; // TODO: Should be in the configuration header; currently in global_game.hpp
-    m_player_startpos.x = 100;
-    m_player_startpos.y = 100;
+    m_engine_version = level_engine_version;
+    m_player_start_pos_x = cLevel_Player::m_default_pos_x;
+    m_player_start_pos_y = cLevel_Player::m_default_pos_y;
 
     m_camera_limits.left = 0;
     m_camera_limits.top = 0;
@@ -326,7 +364,9 @@ void cLevel::Check_Collisions_For_Actor(cActor& actor)
         if (actor == other)
             continue;
 
-        if (other.Get_Collision_Type() != cActor::COLTYPE_PASSIVE && actor.Does_Collide(other)) {
+        // If the other object is of a collidable type and
+        // the rectangles intersect, consider a collision.
+        if (other.Is_Collidable() && actor.Does_Collide(other)) {
             Add_Collision_If_Required(new cCollision(&actor, &other));
             // MRuby Touch event is not fired here, that’s fired when the collisions are handled.
         }
@@ -404,7 +444,7 @@ void cLevel::Add_Player(cLevel_Player* p_levelplayer)
  */
 bool cLevel::operator==(const cLevel& other) const
 {
-    return m_levelfile == other.m_levelfile;
+    return m_level_filename == other.m_level_filename;
 }
 
 /**
@@ -413,4 +453,80 @@ bool cLevel::operator==(const cLevel& other) const
 bool cLevel::operator!=(const cLevel& other) const
 {
     return !(*this == other);
+}
+
+fs::path cLevel::Get_Music_Filename() const
+{
+    return gp_app->Get_PackageManager().Get_Relative_Music_Path(m_musicfile);
+}
+
+void cLevel::Set_Music(fs::path filename)
+{
+    // add music dir
+    if (!filename.is_absolute())
+        filename = gp_app->Get_PackageManager().Get_Music_Reading_Path(path_to_utf8(filename));
+
+    // already set
+    if (m_musicfile.compare(filename) == 0) {
+        return;
+    }
+
+    m_musicfile = filename;
+    // check if music is available
+    m_valid_music = File_Exists(filename);
+}
+
+void cLevel::Set_Filename(fs::path filename, bool rename_old /* = true */)
+{
+    // erase file type and directory
+    filename = Trim_Filename(filename, 0, 0);
+
+    // if invalid
+    if (path_to_utf8(filename).length() < 2) {
+        return;
+    }
+
+    // add level file type
+    if (filename.extension() != fs::path(".tsclvl"))
+        filename.replace_extension(".tsclvl");
+
+    // add level dir if we aren’t absolute yet
+    filename = fs::absolute(filename, gp_app->Get_PackageManager().Get_User_Level_Path());
+
+    // rename file
+    if (rename_old) {
+        fs::rename(m_level_filename, filename);
+    }
+
+    m_level_filename = filename;
+}
+
+void cLevel::Set_Author(const std::string& name)
+{
+    m_author = name;
+}
+
+void cLevel::Set_Version(const std::string& level_version)
+{
+    m_version = level_version;
+}
+
+void cLevel::Set_Description(const std::string& level_description)
+{
+    m_description = level_description;
+}
+
+void cLevel::Set_Difficulty(const uint8_t level_difficulty)
+{
+    m_difficulty = level_difficulty;
+
+    // if invalid
+    if (m_difficulty > 100) {
+        m_difficulty = 0;
+    }
+}
+
+void cLevel::Set_Land_Type(const LevelLandType level_land_type)
+{
+    m_land_type = level_land_type;
 }

@@ -17,39 +17,27 @@
 #ifndef TSC_BONUSBOX_HPP
 #define TSC_BONUSBOX_HPP
 
-#include "../core/global_basic.hpp"
-#include "../core/xml_attributes.hpp"
-#include "../objects/box.hpp"
-#include "../objects/powerup.hpp"
-#include "../scripting/objects/boxes/mrb_bonusbox.hpp"
-
 namespace TSC {
 
     /* *** *** *** *** *** *** *** *** cBonusBox *** *** *** *** *** *** *** *** *** */
 
-    class cBonusBox : public cBaseBox {
+    class cBonusBox: public cBaseBox {
     public:
         // constructor
-        cBonusBox(cSprite_Manager* sprite_manager);
+        cBonusBox();
         // create from stream
-        cBonusBox(XmlAttributes& attributes, cSprite_Manager* sprite_manager);
+        cBonusBox(XmlAttributes& attributes, cLevel& level, const std::string type_name = "box");
         // destructor
         virtual ~cBonusBox(void);
 
-        // init defaults
-        void Init(void);
-
-        // copy
-        virtual cBonusBox* Copy(void) const;
-
-        // load from stream
-        virtual void Load_From_XML(XmlAttributes& attributes);
-
-        // Create the MRuby object for this
-        virtual mrb_value Create_MRuby_Object(mrb_state* p_state)
-        {
-            return mrb_obj_value(Data_Wrap_Struct(p_state, mrb_class_get(p_state, "BonusBox"), &Scripting::rtTSC_Scriptable, this));
-        }
+        // OLD // load from stream
+        // OLD virtual void Load_From_XML(XmlAttributes& attributes);
+        // OLD 
+        // OLD // Create the MRuby object for this
+        // OLD virtual mrb_value Create_MRuby_Object(mrb_state* p_state)
+        // OLD {
+        // OLD     return mrb_obj_value(Data_Wrap_Struct(p_state, mrb_class_get(p_state, "BonusBox"), &Scripting::rtTSC_Scriptable, this));
+        // OLD }
 
         // sets the count this object can be activated
         virtual void Set_Useable_Count(int count, bool new_startcount = 0);
@@ -76,25 +64,22 @@ namespace TSC {
         virtual void Activate(void);
 
         // update
-        virtual void Update(void);
+        virtual void Update();
         // draw
-        virtual void Draw(cSurface_Request* request = NULL);
+        virtual void Draw(sf::RenderWindow& stage) const;
 
-        // if update is valid for the current state
-        virtual bool Is_Update_Valid();
-
-        // editor activation
-        virtual void Editor_Activate(void);
-        // editor state update
-        virtual void Editor_State_Update(void);
-        // editor animation option selected event
-        bool Editor_Animation_Select(const CEGUI::EventArgs& event);
-        // editor item option selected event
-        bool Editor_Item_Select(const CEGUI::EventArgs& event);
-        // editor force best item option selected event
-        bool Editor_Force_best_item_Select(const CEGUI::EventArgs& event);
-        // editor gold color option selected event
-        bool Editor_Gold_Color_Select(const CEGUI::EventArgs& event);
+        // OLD // editor activation
+        // OLD virtual void Editor_Activate(void);
+        // OLD // editor state update
+        // OLD virtual void Editor_State_Update(void);
+        // OLD // editor animation option selected event
+        // OLD bool Editor_Animation_Select(const CEGUI::EventArgs& event);
+        // OLD // editor item option selected event
+        // OLD bool Editor_Item_Select(const CEGUI::EventArgs& event);
+        // OLD // editor force best item option selected event
+        // OLD bool Editor_Force_best_item_Select(const CEGUI::EventArgs& event);
+        // OLD // editor gold color option selected event
+        // OLD bool Editor_Gold_Color_Select(const CEGUI::EventArgs& event);
 
         // force best possible item
         bool m_force_best_item;
@@ -103,16 +88,18 @@ namespace TSC {
          * list of active item is available
          * and gets added to the level objects if finished
         */
-        typedef vector<cMovingSprite*> MovingSpriteList;
-        MovingSpriteList m_active_items;
+        // OLD typedef vector<cMovingSprite*> MovingSpriteList;
+        // OLD MovingSpriteList m_active_items;
         // Goldpiece color
         DefaultColor m_gold_color;
 
         // Save to node
-        virtual xmlpp::Element* Save_To_XML_Node(xmlpp::Element* p_element);
+        // OLD virtual xmlpp::Element* Save_To_XML_Node(xmlpp::Element* p_element);
 
     protected:
         // typename inherited
+    private:
+        void Init();
     };
 
     /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */

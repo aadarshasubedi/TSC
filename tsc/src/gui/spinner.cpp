@@ -15,6 +15,7 @@
 */
 
 #include "../core/global_basic.hpp"
+#include "../core/global_game.hpp"
 #include "../core/property_helper.hpp"
 #include "spinner.hpp"
 

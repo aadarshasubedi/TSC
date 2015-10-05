@@ -9,6 +9,8 @@
 #include "../video/img_manager.hpp"
 #include "../level/level.hpp"
 #include "actor.hpp"
+#include "../core/errors.hpp"
+#include "../core/xml_attributes.hpp"
 #include "../core/collision.hpp"
 #include "sprite_actor.hpp"
 #include "static_actor.hpp"
@@ -24,7 +26,8 @@ namespace fs = boost::filesystem;
 cStaticActor::cStaticActor()
     : cSpriteActor()
 {
-    Set_Texture(utf8_to_path("game/dummy_1.png"));
+    Init();
+    Set_Texture(utf8_to_path("game/dummy_1.png")); // FIXME: Put into Init();
 }
 
 /**
@@ -34,7 +37,22 @@ cStaticActor::cStaticActor()
 cStaticActor::cStaticActor(boost::filesystem::path relative_texture_path)
     : cSpriteActor()
 {
+    Init();
     Set_Texture(relative_texture_path);
+}
+
+cStaticActor::cStaticActor(XmlAttributes& attributes, cLevel& level, const std::string type_name)
+    : cSpriteActor(attributes, level, type_name)
+{
+    Init();
+
+    Set_Texture(utf8_to_path(attributes["image"]));
+}
+
+void cStaticActor::Init()
+{
+    // FIXME: Set_Texture() applied again causes weird zooming!
+    //Set_Texture(utf8_to_path("game/dummy_1.png"));
 }
 
 cStaticActor::~cStaticActor()
@@ -57,6 +75,10 @@ void cStaticActor::Set_Texture(fs::path relative_texture_path)
     const struct ConfiguredTexture& txtinfo = gp_app->Get_ImageManager().Get_Texture(m_rel_texture_path);
     m_sprite.setTexture(*txtinfo.m_texture);
     txtinfo.m_settings->Apply(*this);
+
+    // TODO: Do we only need mp_texture for the backward compatbility
+    // code in level_loader.cpp?
+    mp_texture = &txtinfo;
 }
 
 void cStaticActor::Draw(sf::RenderWindow& stage) const

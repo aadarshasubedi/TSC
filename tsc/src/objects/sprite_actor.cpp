@@ -10,6 +10,8 @@
 #include "../level/level.hpp"
 #include "actor.hpp"
 #include "../core/collision.hpp"
+#include "../core/errors.hpp"
+#include "../core/xml_attributes.hpp"
 #include "sprite_actor.hpp"
 
 using namespace TSC;
@@ -21,7 +23,23 @@ namespace fs = boost::filesystem;
 cSpriteActor::cSpriteActor()
     : cActor()
 {
-    m_coltype = COLTYPE_MASSIVE;
+    Init();
+}
+
+cSpriteActor::cSpriteActor(XmlAttributes& attributes, cLevel& level, const std::string type_name)
+    : cActor(attributes, level, type_name)
+{
+    Init();
+
+    // Because our default value for m_coltype is different, re-evaluate
+    // this attribute.
+    Set_Collision_Type(Get_Collision_Type_Id(attributes["type"]));
+}
+
+void cSpriteActor::Init()
+{
+    Set_Collision_Type(COLTYPE_MASSIVE);
+    m_invisible = false;
 }
 
 cSpriteActor::~cSpriteActor()
@@ -36,8 +54,11 @@ void cSpriteActor::Added_To_Level(cLevel* p_level, const unsigned long& uid)
 
 void cSpriteActor::Draw(sf::RenderWindow& stage) const
 {
-    stage.draw(m_sprite, getTransform()); // <3 SFML. This allows us to apply the same transformations that affect the collision rectangle to also affect the sprite.
+    if (!m_invisible) {
+        stage.draw(m_sprite, getTransform()); // <3 SFML. This allows us to apply the same transformations that affect the collision rectangle to also affect the sprite.
+    }
 
+    // Still draws the debug colrect!
     cActor::Draw(stage);
 }
 

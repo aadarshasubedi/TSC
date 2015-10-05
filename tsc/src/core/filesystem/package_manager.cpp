@@ -14,6 +14,7 @@
 */
 
 #include "../global_basic.hpp"
+#include "../global_game.hpp"
 #include "../property_helper.hpp"
 #include "../errors.hpp"
 #include "../global_basic.hpp"

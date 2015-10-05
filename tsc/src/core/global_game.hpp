@@ -200,7 +200,7 @@ namespace TSC {
     static const int speedfactor_fps = 32;
 
     /* *** level engine version *** */
-    static const int level_engine_version = 46;
+    static const int level_engine_version = 47;
     /* *** world engine version *** */
     static const int world_engine_version = 5;
 
@@ -288,9 +288,33 @@ namespace TSC {
         GROUND_PLASTIC = 5
     };
 
+    // MassiveType has been replaced by CollisionType
+
+    /**
+     * Determines how the actor behaves in the collision detection
+     * mechanism, and how the object behaves when the player tries
+     * to enter it (e.g. a player can jump through an halfmassive
+     * object).
+     *
+     * Z positioning is managed by use of the ZLayer constants in actor.hpp.
+     **/
+    enum CollisionType {
+        COLTYPE_MASSIVE = 1,
+        COLTYPE_PASSIVE,
+        COLTYPE_ENEMY,
+        COLTYPE_ACTIVE,
+        COLTYPE_ANIM,
+        COLTYPE_PLAYER,
+        COLTYPE_LAVA,
+        COLTYPE_HALFMASSIVE,
+        COLTYPE_FRONTPASSIVE,
+        COLTYPE_CLIMBABLE
+    };
+
     /* *** Array Types *** */
 // Array types define how an object behaves on collisions.
 
+    /* replaced by cActor::CollisionType
     enum ArrayType {
         ARRAY_UNDEFINED = 0,
         // normal blocking object (level default)
@@ -309,7 +333,7 @@ namespace TSC {
         ARRAY_PLAYER = 7,
         // lava
         ARRAY_LAVA = 8
-    };
+        }; */
 
     /* *** collision validation types *** */
 
@@ -554,7 +578,6 @@ namespace TSC {
     class cSavegameLoader;
     class cScene;
     class cSceneManager;
-    class cScriptable_Object;
     class cSelectedObject;
     class cShell;
     class cShoot_Event;
@@ -581,6 +604,7 @@ namespace TSC {
     class cVideo;
     class cWaypoint;
     class cWorld_Sprite_Manager;
+    class XmlAttributes;
 
     /** CLASS FORWARD DECLRATIONS END **/
 

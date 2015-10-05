@@ -17,11 +17,6 @@
 #ifndef TSC_BOX_HPP
 #define TSC_BOX_HPP
 
-#include "../core/global_basic.hpp"
-#include "../core/xml_attributes.hpp"
-#include "../objects/movingsprite.hpp"
-#include "../scripting/objects/boxes/mrb_box.hpp"
-
 namespace TSC {
 
     /* *** *** *** *** *** *** *** *** Box invisible types *** *** *** *** *** *** *** *** *** */
@@ -39,24 +34,12 @@ namespace TSC {
 
     /* *** *** *** *** *** *** *** *** cBaseBox *** *** *** *** *** *** *** *** *** */
 
-    class cBaseBox : public cMovingSprite {
+    class cBaseBox: public cAnimatedActor {
     public:
-        cBaseBox(cSprite_Manager* sprite_manager);
+        cBaseBox();
+        cBaseBox(XmlAttributes& attributes, cLevel& level, const std::string type_name = "box");
+
         virtual ~cBaseBox(void);
-
-        // load from stream
-        virtual void Load_From_XML(XmlAttributes& attributes);
-
-        // load from savegame
-        virtual void Load_From_Savegame(cSave_Level_Object* save_object);
-        // save to savegame
-        virtual bool Save_To_Savegame_XML_Node(xmlpp::Element* p_element) const;
-
-        // Create the MRuby object for this
-        virtual mrb_value Create_MRuby_Object(mrb_state* p_state)
-        {
-            return mrb_obj_value(Data_Wrap_Struct(p_state, mrb_class_get(p_state, "Box"), &Scripting::rtTSC_Scriptable, this));
-        }
 
         /* Set the Animation Type
          * new_anim_type can be : Bonus, Default or Power
@@ -65,17 +48,15 @@ namespace TSC {
         // sets the count this object can be activated
         virtual void Set_Useable_Count(int count, bool new_startcount = 0);
         // Set invisible type
-        void Set_Invisible(Box_Invisible_Type type);
+        void Set_Box_Invisible(Box_Invisible_Type type);
 
-        virtual void Set_Massive_Type(MassiveType type);
+        // OLD virtual void Set_Massive_Type(MassiveType type);
 
         // activates collision movement
         void Activate_Collision(ObjectDirection col_direction);
         // updates the collision movement
         void Update_Collision(void);
 
-        // check for collision with objects
-        void Check_Collision(ObjectDirection col_direction);
         // collision with the given enemy
         void Col_Enemy(cSprite* obj);
 
@@ -83,35 +64,27 @@ namespace TSC {
         virtual void Activate(void);
 
         // update
-        virtual void Update(void);
+        virtual void Update();
         // draw
-        virtual void Draw(cSurface_Request* request = NULL);
+        virtual void Draw(sf::RenderWindow& stage) const;
 
         // Generate activation Particles
         void Generate_Activation_Particles(void);
 
         // if update is valid for the current state
-        virtual bool Is_Update_Valid();
-        // if draw is valid for the current state and position
-        virtual bool Is_Draw_Valid(void);
+        // OLD virtual bool Is_Update_Valid();
 
-        /* Validate the given collision object
-         * returns 0 if not valid
-         * returns 1 if an internal collision with this object is valid
-         * returns 2 if the given object collides with this object (blocking)
-        */
-        virtual Col_Valid_Type Validate_Collision(cSprite* obj);
         // handle the basic box player collision
-        virtual void Handle_Collision_Player(cObjectCollision* collision);
+        virtual bool Handle_Collision_Player(cCollision* p_collision);
         // handle the basic box enemy collision
-        virtual void Handle_Collision_Enemy(cObjectCollision* collision);
+        virtual bool Handle_Collision_Enemy(cCollision* p_collision);
 
         // editor activation
-        virtual void Editor_Activate(void);
+        // OLD virtual void Editor_Activate(void);
         // editor useable count text changed event
-        bool Editor_Useable_Count_Text_Changed(const CEGUI::EventArgs& event);
+        // OLD bool Editor_Useable_Count_Text_Changed(const CEGUI::EventArgs& event);
         // editor invisible option selected event
-        bool Editor_Invisible_Select(const CEGUI::EventArgs& event);
+        // OLD bool Editor_Invisible_Select(const CEGUI::EventArgs& event);
 
         // animation type
         std::string m_anim_type;
@@ -119,7 +92,7 @@ namespace TSC {
         SpriteType box_type;
 
         // leveleditor item image
-        cGL_Surface* m_item_image;
+        // OLD cGL_Surface* m_item_image;
 
         // moving direction when activated
         ObjectDirection m_move_col_dir;
@@ -141,11 +114,13 @@ namespace TSC {
         float m_particle_counter_active;
 
         // Save to XML node
-        virtual xmlpp::Element* Save_To_XML_Node(xmlpp::Element* p_element);
-        virtual std::string Create_Name(void) const;
+        // OLD virtual xmlpp::Element* Save_To_XML_Node(xmlpp::Element* p_element);
+        // OLD virtual std::string Create_Name(void) const;
 
     protected:
-        virtual std::string Get_XML_Type_Name();
+        // OLD virtual std::string Get_XML_Type_Name();
+    private:
+        void Init();
     };
 
     /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */

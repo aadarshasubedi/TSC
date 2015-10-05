@@ -15,6 +15,7 @@
 */
 
 #include "../global_basic.hpp"
+#include "../global_game.hpp"
 #include "../property_helper.hpp"
 #include "../../core/filesystem/filesystem.hpp"
 

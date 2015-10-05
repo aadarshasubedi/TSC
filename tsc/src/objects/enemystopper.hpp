@@ -17,42 +17,31 @@
 #ifndef TSC_ENEMYSTOPPER_HPP
 #define TSC_ENEMYSTOPPER_HPP
 
-#include "../core/global_basic.hpp"
-#include "../objects/movingsprite.hpp"
-#include "../scripting/objects/specials/mrb_enemy_stopper.hpp"
-
 namespace TSC {
 
     /* *** *** *** *** *** cEnemyStopper *** *** *** *** *** *** *** *** *** *** *** *** */
 
-    class cEnemyStopper : public cMovingSprite {
+    class cEnemyStopper : public cActor {
     public:
         // constructor
-        cEnemyStopper(cSprite_Manager* sprite_manager);
-        // create from stream
-        cEnemyStopper(XmlAttributes& attributes, cSprite_Manager* sprite_manager);
+        cEnemyStopper();
+        cEnemyStopper(XmlAttributes& attributes, cLevel& level, const std::string type_name = "enemystopper");
         // destructor
         virtual ~cEnemyStopper(void);
 
         // init defaults
         void Init(void);
         // copy
-        virtual cEnemyStopper* Copy(void) const;
+        // OLD virtual cEnemyStopper* Copy(void) const;
 
         // Create the MRuby object for this
-        virtual mrb_value Create_MRuby_Object(mrb_state* p_state)
-        {
-            return mrb_obj_value(Data_Wrap_Struct(p_state, mrb_class_get(p_state, "Enemy_Stopper"), &Scripting::rtTSC_Scriptable, this));
-        }
+        // OLD virtual mrb_value Create_MRuby_Object(mrb_state* p_state)
+        // OLD {
+        // OLD     return mrb_obj_value(Data_Wrap_Struct(p_state, mrb_class_get(p_state, "Enemy_Stopper"), &Scripting::rtTSC_Scriptable, this));
+        // OLD }
 
         // draw
-        virtual void Draw(cSurface_Request* request = NULL);
-
-        // if draw is valid for the current state and position
-        virtual bool Is_Draw_Valid(void);
-
-        // editor color
-        Color m_editor_color;
+        virtual void Draw(sf::RenderWindow& stage);
 
     protected:
         // save to XML node inherited

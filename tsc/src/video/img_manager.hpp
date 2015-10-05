@@ -27,6 +27,7 @@ namespace TSC {
     {
         sf::Texture* m_texture;
         cImage_Settings_Data* m_settings;
+        boost::filesystem::path m_path;
     };
 
     /* *** *** *** *** *** *** cImage_Manager *** *** *** *** *** *** *** *** *** *** *** */

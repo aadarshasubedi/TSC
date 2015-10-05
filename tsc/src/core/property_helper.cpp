@@ -15,6 +15,9 @@
 */
 
 #include "global_basic.hpp"
+#include "global_game.hpp"
+#include "i18n.hpp"
+#include "../video/color.hpp"
 
 namespace TSC {
 
@@ -455,133 +458,133 @@ std::string Time_to_String(time_t t, const char* format)
     return str_time;
 }
 
-//ObjectDirection Get_Opposite_Direction(const ObjectDirection direction)
-//{
-//    switch (direction) {
-//    case DIR_UP:
-//        return DIR_DOWN;
-//    case DIR_DOWN:
-//        return DIR_UP;
-//    case DIR_LEFT:
-//        return DIR_RIGHT;
-//    case DIR_RIGHT:
-//        return DIR_LEFT;
-//    case DIR_HORIZONTAL:
-//        return DIR_VERTICAL;
-//    case DIR_VERTICAL:
-//        return DIR_HORIZONTAL;
-//    default:
-//        break;
-//    }
-//
-//    return DIR_UNDEFINED;
-//}
-//
-//std::string Get_Direction_Name(const ObjectDirection dir)
-//{
-//    switch (dir) {
-//    case DIR_UNDEFINED:
-//        return N_("undefined");
-//    case DIR_LEFT:
-//        return N_("left");
-//    case DIR_RIGHT:
-//        return N_("right");
-//    case DIR_UP:
-//        return N_("up");
-//    case DIR_DOWN:
-//        return N_("down");
-//    case DIR_TOP_LEFT:
-//        return N_("top_left");
-//    case DIR_TOP_RIGHT:
-//        return N_("top_right");
-//    case DIR_BOTTOM_LEFT:
-//        return N_("bottom_left");
-//    case DIR_BOTTOM_RIGHT:
-//        return N_("bottom_right");
-//    case DIR_LEFT_TOP:
-//        return N_("left_top");
-//    case DIR_LEFT_BOTTOM:
-//        return N_("left_bottom");
-//    case DIR_RIGHT_TOP:
-//        return N_("right_top");
-//    case DIR_RIGHT_BOTTOM:
-//        return N_("right_bottom");
-//    case DIR_HORIZONTAL:
-//        return N_("horizontal");
-//    case DIR_VERTICAL:
-//        return N_("vertical");
-//    case DIR_ALL:
-//        return N_("all");
-//    case DIR_FIRST:
-//        return N_("first");
-//    case DIR_LAST:
-//        return N_("last");
-//    default:
-//        break;
-//    }
-//
-//    return "";
-//}
-//
-//ObjectDirection Get_Direction_Id(const std::string& str_direction)
-//{
-//    if (str_direction.compare("undefined") == 0) {
-//        return DIR_UNDEFINED;
-//    }
-//    else if (str_direction.compare("left") == 0) {
-//        return DIR_LEFT;
-//    }
-//    else if (str_direction.compare("right") == 0) {
-//        return DIR_RIGHT;
-//    }
-//    else if (str_direction.compare("up") == 0) {
-//        return DIR_UP;
-//    }
-//    else if (str_direction.compare("down") == 0) {
-//        return DIR_DOWN;
-//    }
-//    else if (str_direction.compare("top_left") == 0) {
-//        return DIR_TOP_LEFT;
-//    }
-//    else if (str_direction.compare("top_right") == 0) {
-//        return DIR_TOP_RIGHT;
-//    }
-//    else if (str_direction.compare("bottom_left") == 0) {
-//        return DIR_BOTTOM_LEFT;
-//    }
-//    else if (str_direction.compare("bottom_right") == 0) {
-//        return DIR_BOTTOM_RIGHT;
-//    }
-//    else if (str_direction.compare("left_top") == 0) {
-//        return DIR_LEFT_TOP;
-//    }
-//    else if (str_direction.compare("left_bottom") == 0) {
-//        return DIR_LEFT_BOTTOM;
-//    }
-//    else if (str_direction.compare("right_top") == 0) {
-//        return DIR_RIGHT_TOP;
-//    }
-//    else if (str_direction.compare("right_bottom") == 0) {
-//        return DIR_RIGHT_BOTTOM;
-//    }
-//    else if (str_direction.compare("horizontal") == 0) {
-//        return DIR_HORIZONTAL;
-//    }
-//    else if (str_direction.compare("vertical") == 0) {
-//        return DIR_VERTICAL;
-//    }
-//    else if (str_direction.compare("all") == 0) {
-//        return DIR_ALL;
-//    }
-//    else if (str_direction.compare("first") == 0) {
-//        return DIR_FIRST;
-//    }
-//    else if (str_direction.compare("last") == 0) {
-//        return DIR_LAST;
-//    }
-//
-//    return DIR_UNDEFINED;
-//}
+ObjectDirection Get_Opposite_Direction(const ObjectDirection direction)
+{
+    switch (direction) {
+    case DIR_UP:
+        return DIR_DOWN;
+    case DIR_DOWN:
+        return DIR_UP;
+    case DIR_LEFT:
+        return DIR_RIGHT;
+    case DIR_RIGHT:
+        return DIR_LEFT;
+    case DIR_HORIZONTAL:
+        return DIR_VERTICAL;
+    case DIR_VERTICAL:
+        return DIR_HORIZONTAL;
+    default:
+        break;
+    }
+
+    return DIR_UNDEFINED;
+}
+
+std::string Get_Direction_Name(const ObjectDirection dir)
+{
+    switch (dir) {
+    case DIR_UNDEFINED:
+        return N_("undefined");
+    case DIR_LEFT:
+        return N_("left");
+    case DIR_RIGHT:
+        return N_("right");
+    case DIR_UP:
+        return N_("up");
+    case DIR_DOWN:
+        return N_("down");
+    case DIR_TOP_LEFT:
+        return N_("top_left");
+    case DIR_TOP_RIGHT:
+        return N_("top_right");
+    case DIR_BOTTOM_LEFT:
+        return N_("bottom_left");
+    case DIR_BOTTOM_RIGHT:
+        return N_("bottom_right");
+    case DIR_LEFT_TOP:
+        return N_("left_top");
+    case DIR_LEFT_BOTTOM:
+        return N_("left_bottom");
+    case DIR_RIGHT_TOP:
+        return N_("right_top");
+    case DIR_RIGHT_BOTTOM:
+        return N_("right_bottom");
+    case DIR_HORIZONTAL:
+        return N_("horizontal");
+    case DIR_VERTICAL:
+        return N_("vertical");
+    case DIR_ALL:
+        return N_("all");
+    case DIR_FIRST:
+        return N_("first");
+    case DIR_LAST:
+        return N_("last");
+    default:
+        break;
+    }
+
+    return "";
+}
+
+ObjectDirection Get_Direction_Id(const std::string& str_direction)
+{
+    if (str_direction.compare("undefined") == 0) {
+        return DIR_UNDEFINED;
+    }
+    else if (str_direction.compare("left") == 0) {
+        return DIR_LEFT;
+    }
+    else if (str_direction.compare("right") == 0) {
+        return DIR_RIGHT;
+    }
+    else if (str_direction.compare("up") == 0) {
+        return DIR_UP;
+    }
+    else if (str_direction.compare("down") == 0) {
+        return DIR_DOWN;
+    }
+    else if (str_direction.compare("top_left") == 0) {
+        return DIR_TOP_LEFT;
+    }
+    else if (str_direction.compare("top_right") == 0) {
+        return DIR_TOP_RIGHT;
+    }
+    else if (str_direction.compare("bottom_left") == 0) {
+        return DIR_BOTTOM_LEFT;
+    }
+    else if (str_direction.compare("bottom_right") == 0) {
+        return DIR_BOTTOM_RIGHT;
+    }
+    else if (str_direction.compare("left_top") == 0) {
+        return DIR_LEFT_TOP;
+    }
+    else if (str_direction.compare("left_bottom") == 0) {
+        return DIR_LEFT_BOTTOM;
+    }
+    else if (str_direction.compare("right_top") == 0) {
+        return DIR_RIGHT_TOP;
+    }
+    else if (str_direction.compare("right_bottom") == 0) {
+        return DIR_RIGHT_BOTTOM;
+    }
+    else if (str_direction.compare("horizontal") == 0) {
+        return DIR_HORIZONTAL;
+    }
+    else if (str_direction.compare("vertical") == 0) {
+        return DIR_VERTICAL;
+    }
+    else if (str_direction.compare("all") == 0) {
+        return DIR_ALL;
+    }
+    else if (str_direction.compare("first") == 0) {
+        return DIR_FIRST;
+    }
+    else if (str_direction.compare("last") == 0) {
+        return DIR_LAST;
+    }
+
+    return DIR_UNDEFINED;
+}
 //
 //Color Get_Sprite_Color(const cSprite* sprite)
 //{
@@ -619,277 +622,277 @@ std::string Time_to_String(time_t t, const char* format)
 //
 //    return lightgreyalpha64;
 //}
-//
-//std::string Get_Massive_Type_Name(const MassiveType mtype)
-//{
-//    switch (mtype) {
-//    case MASS_PASSIVE:
-//        return "passive";
-//    case MASS_MASSIVE:
-//        return "massive";
-//    case MASS_HALFMASSIVE:
-//        return "halfmassive";
-//    case MASS_CLIMBABLE:
-//        return "climbable";
-//    case MASS_FRONT_PASSIVE:
-//        return "front_passive";
-//    default:
-//        break;
-//    }
-//
-//    return "";
-//}
-//
-//MassiveType Get_Massive_Type_Id(const std::string& str_massivetype)
-//{
-//    if (str_massivetype.compare("passive") == 0) {
-//        return MASS_PASSIVE;
-//    }
-//    else if (str_massivetype.compare("front_passive") == 0) {
-//        return MASS_FRONT_PASSIVE;
-//    }
-//    else if (str_massivetype.compare("massive") == 0) {
-//        return MASS_MASSIVE;
-//    }
-//    else if (str_massivetype.compare("halfmassive") == 0) {
-//        return MASS_HALFMASSIVE;
-//    }
-//    else if (str_massivetype.compare("climbable") == 0) {
-//        return MASS_CLIMBABLE;
-//    }
-//
-//    return MASS_PASSIVE;
-//}
-//
-//Color Get_Massive_Type_Color(MassiveType mtype)
-//{
-//    switch (mtype) {
-//    case MASS_MASSIVE:
-//        return lightred;
-//    case MASS_HALFMASSIVE:
-//        return orange;
-//    case MASS_PASSIVE:
-//        return lightgreen;
-//    case MASS_CLIMBABLE:
-//        return lila;
-//    case MASS_FRONT_PASSIVE:
-//        return greenyellow;
-//    default:
-//        break;
-//    }
-//
-//    return white;
-//}
-//
-//std::string Get_Ground_Type_Name(const GroundType gtype)
-//{
-//    switch (gtype) {
-//    case GROUND_NORMAL:
-//        return "normal";
-//    case GROUND_EARTH:
-//        return "earth";
-//    case GROUND_ICE:
-//        return "ice";
-//    case GROUND_SAND:
-//        return "sand";
-//    case GROUND_STONE:
-//        return "stone";
-//    case GROUND_PLASTIC:
-//        return "plastic";
-//    default:
-//        break;
-//    }
-//
-//    return "";
-//}
-//
-//GroundType Get_Ground_Type_Id(const std::string& str_groundtype)
-//{
-//    if (str_groundtype.compare("normal") == 0) {
-//        return GROUND_NORMAL;
-//    }
-//    else if (str_groundtype.compare("earth") == 0) {
-//        return GROUND_EARTH;
-//    }
-//    else if (str_groundtype.compare("ice") == 0) {
-//        return GROUND_ICE;
-//    }
-//    else if (str_groundtype.compare("sand") == 0) {
-//        return GROUND_SAND;
-//    }
-//    else if (str_groundtype.compare("stone") == 0) {
-//        return GROUND_STONE;
-//    }
-//    else if (str_groundtype.compare("plastic") == 0) {
-//        return GROUND_PLASTIC;
-//    }
-//
-//    return GROUND_NORMAL;
-//}
-//
-//std::string Get_Level_Land_Type_Name(const LevelLandType land_type)
-//{
-//    switch (land_type) {
-//    case LLT_UNDEFINED:
-//        return N_("undefined");
-//    case LLT_GREEN:
-//        return N_("green");
-//    case LLT_JUNGLE:
-//        return N_("jungle");
-//    case LLT_ICE:
-//        return N_("ice");
-//    case LLT_SNOW:
-//        return N_("snow");
-//    case LLT_WATER:
-//        return N_("water");
-//    case LLT_CANDY:
-//        return N_("candy");
-//    case LLT_DESERT:
-//        return N_("desert");
-//    case LLT_SAND:
-//        return N_("sand");
-//    case LLT_CASTLE:
-//        return N_("castle");
-//    case LLT_UNDERGROUND:
-//        return N_("underground");
-//    case LLT_CRYSTAL:
-//        return N_("crystal");
-//    case LLT_GHOST:
-//        return N_("ghost");
-//    case LLT_MUSHROOM:
-//        return N_("mushroom");
-//    case LLT_SKY:
-//        return N_("sky");
-//    case LLT_PLASTIC:
-//        return N_("plastic");
-//    default:
-//        break;
-//    }
-//
-//    return "";
-//}
-//
-//LevelLandType Get_Level_Land_Type_Id(const std::string& str_type)
-//{
-//    if (str_type.compare("undefined") == 0) {
-//        return LLT_UNDEFINED;
-//    }
-//    else if (str_type.compare("green") == 0) {
-//        return LLT_GREEN;
-//    }
-//    else if (str_type.compare("jungle") == 0) {
-//        return LLT_JUNGLE;
-//    }
-//    else if (str_type.compare("ice") == 0) {
-//        return LLT_ICE;
-//    }
-//    else if (str_type.compare("snow") == 0) {
-//        return LLT_SNOW;
-//    }
-//    else if (str_type.compare("water") == 0) {
-//        return LLT_WATER;
-//    }
-//    else if (str_type.compare("candy") == 0) {
-//        return LLT_CANDY;
-//    }
-//    else if (str_type.compare("desert") == 0) {
-//        return LLT_DESERT;
-//    }
-//    else if (str_type.compare("sand") == 0) {
-//        return LLT_SAND;
-//    }
-//    else if (str_type.compare("castle") == 0) {
-//        return LLT_CASTLE;
-//    }
-//    else if (str_type.compare("underground") == 0) {
-//        return LLT_UNDERGROUND;
-//    }
-//    else if (str_type.compare("crystal") == 0) {
-//        return LLT_CRYSTAL;
-//    }
-//    else if (str_type.compare("ghost") == 0) {
-//        return LLT_GHOST;
-//    }
-//    else if (str_type.compare("mushroom") == 0) {
-//        return LLT_MUSHROOM;
-//    }
-//    else if (str_type.compare("sky") == 0) {
-//        return LLT_SKY;
-//    }
-//    else if (str_type.compare("plastic") == 0) {
-//        return LLT_PLASTIC;
-//    }
-//
-//    return LLT_UNDEFINED;
-//}
-//
-//std::string Get_Color_Name(const DefaultColor color)
-//{
-//    switch (color) {
-//    case COL_DEFAULT:
-//        return N_("default");
-//    case COL_WHITE:
-//        return N_("white");
-//    case COL_BLACK:
-//        return N_("black");
-//    case COL_RED:
-//        return N_("red");
-//    case COL_ORANGE:
-//        return N_("orange");
-//    case COL_YELLOW:
-//        return N_("yellow");
-//    case COL_GREEN:
-//        return N_("green");
-//    case COL_BLUE:
-//        return N_("blue");
-//    case COL_BROWN:
-//        return N_("brown");
-//    case COL_GREY:
-//        return N_("grey");
-//    case COL_VIOLET:
-//        return N_("violet");
-//    default:
-//        break;
-//    }
-//
-//    return "";
-//}
-//
-//DefaultColor Get_Color_Id(const std::string& str_color)
-//{
-//    if (str_color.compare("white") == 0) {
-//        return COL_WHITE;
-//    }
-//    else if (str_color.compare("black") == 0) {
-//        return COL_BLACK;
-//    }
-//    else if (str_color.compare("red") == 0) {
-//        return COL_RED;
-//    }
-//    else if (str_color.compare("orange") == 0) {
-//        return COL_ORANGE;
-//    }
-//    else if (str_color.compare("yellow") == 0) {
-//        return COL_YELLOW;
-//    }
-//    else if (str_color.compare("green") == 0) {
-//        return COL_GREEN;
-//    }
-//    else if (str_color.compare("blue") == 0) {
-//        return COL_BLUE;
-//    }
-//    else if (str_color.compare("brown") == 0) {
-//        return COL_BROWN;
-//    }
-//    else if (str_color.compare("grey") == 0) {
-//        return COL_GREY;
-//    }
-//    else if (str_color.compare("violet") == 0) {
-//        return COL_VIOLET;
-//    }
-//
-//    return COL_DEFAULT;
-//}
+
+std::string Get_Collision_Type_Name(const CollisionType mtype)
+{
+    switch (mtype) {
+    case COLTYPE_PASSIVE:
+        return "passive";
+    case COLTYPE_MASSIVE:
+        return "massive";
+    case COLTYPE_HALFMASSIVE:
+        return "halfmassive";
+    case COLTYPE_CLIMBABLE:
+        return "climbable";
+    case COLTYPE_FRONTPASSIVE:
+        return "front_passive";
+    default:
+        break;
+    }
+
+    return "";
+}
+
+CollisionType Get_Collision_Type_Id(const std::string& str_massivetype)
+{
+    if (str_massivetype.compare("passive") == 0) {
+        return COLTYPE_PASSIVE;
+    }
+    else if (str_massivetype.compare("front_passive") == 0) {
+        return COLTYPE_FRONTPASSIVE;
+    }
+    else if (str_massivetype.compare("massive") == 0) {
+        return COLTYPE_MASSIVE;
+    }
+    else if (str_massivetype.compare("halfmassive") == 0) {
+        return COLTYPE_HALFMASSIVE;
+    }
+    else if (str_massivetype.compare("climbable") == 0) {
+        return COLTYPE_CLIMBABLE;
+    }
+
+    return COLTYPE_PASSIVE;
+}
+
+sf::Color Get_Collision_Type_Color(CollisionType mtype)
+{
+    switch (mtype) {
+    case COLTYPE_MASSIVE:
+        return lightred;
+    case COLTYPE_HALFMASSIVE:
+        return orange;
+    case COLTYPE_PASSIVE:
+        return lightgreen;
+    case COLTYPE_CLIMBABLE:
+        return lila;
+    case COLTYPE_FRONTPASSIVE:
+        return greenyellow;
+    default:
+        break;
+    }
+
+    return white;
+}
+
+std::string Get_Ground_Type_Name(const GroundType gtype)
+{
+    switch (gtype) {
+    case GROUND_NORMAL:
+        return "normal";
+    case GROUND_EARTH:
+        return "earth";
+    case GROUND_ICE:
+        return "ice";
+    case GROUND_SAND:
+        return "sand";
+    case GROUND_STONE:
+        return "stone";
+    case GROUND_PLASTIC:
+        return "plastic";
+    default:
+        break;
+    }
+
+    return "";
+}
+
+GroundType Get_Ground_Type_Id(const std::string& str_groundtype)
+{
+    if (str_groundtype.compare("normal") == 0) {
+        return GROUND_NORMAL;
+    }
+    else if (str_groundtype.compare("earth") == 0) {
+        return GROUND_EARTH;
+    }
+    else if (str_groundtype.compare("ice") == 0) {
+        return GROUND_ICE;
+    }
+    else if (str_groundtype.compare("sand") == 0) {
+        return GROUND_SAND;
+    }
+    else if (str_groundtype.compare("stone") == 0) {
+        return GROUND_STONE;
+    }
+    else if (str_groundtype.compare("plastic") == 0) {
+        return GROUND_PLASTIC;
+    }
+
+    return GROUND_NORMAL;
+}
+
+std::string Get_Level_Land_Type_Name(const LevelLandType land_type)
+{
+    switch (land_type) {
+    case LLT_UNDEFINED:
+        return N_("undefined");
+    case LLT_GREEN:
+        return N_("green");
+    case LLT_JUNGLE:
+        return N_("jungle");
+    case LLT_ICE:
+        return N_("ice");
+    case LLT_SNOW:
+        return N_("snow");
+    case LLT_WATER:
+        return N_("water");
+    case LLT_CANDY:
+        return N_("candy");
+    case LLT_DESERT:
+        return N_("desert");
+    case LLT_SAND:
+        return N_("sand");
+    case LLT_CASTLE:
+        return N_("castle");
+    case LLT_UNDERGROUND:
+        return N_("underground");
+    case LLT_CRYSTAL:
+        return N_("crystal");
+    case LLT_GHOST:
+        return N_("ghost");
+    case LLT_MUSHROOM:
+        return N_("mushroom");
+    case LLT_SKY:
+        return N_("sky");
+    case LLT_PLASTIC:
+        return N_("plastic");
+    default:
+        break;
+    }
+
+    return "";
+}
+
+LevelLandType Get_Level_Land_Type_Id(const std::string& str_type)
+{
+    if (str_type.compare("undefined") == 0) {
+        return LLT_UNDEFINED;
+    }
+    else if (str_type.compare("green") == 0) {
+        return LLT_GREEN;
+    }
+    else if (str_type.compare("jungle") == 0) {
+        return LLT_JUNGLE;
+    }
+    else if (str_type.compare("ice") == 0) {
+        return LLT_ICE;
+    }
+    else if (str_type.compare("snow") == 0) {
+        return LLT_SNOW;
+    }
+    else if (str_type.compare("water") == 0) {
+        return LLT_WATER;
+    }
+    else if (str_type.compare("candy") == 0) {
+        return LLT_CANDY;
+    }
+    else if (str_type.compare("desert") == 0) {
+        return LLT_DESERT;
+    }
+    else if (str_type.compare("sand") == 0) {
+        return LLT_SAND;
+    }
+    else if (str_type.compare("castle") == 0) {
+        return LLT_CASTLE;
+    }
+    else if (str_type.compare("underground") == 0) {
+        return LLT_UNDERGROUND;
+    }
+    else if (str_type.compare("crystal") == 0) {
+        return LLT_CRYSTAL;
+    }
+    else if (str_type.compare("ghost") == 0) {
+        return LLT_GHOST;
+    }
+    else if (str_type.compare("mushroom") == 0) {
+        return LLT_MUSHROOM;
+    }
+    else if (str_type.compare("sky") == 0) {
+        return LLT_SKY;
+    }
+    else if (str_type.compare("plastic") == 0) {
+        return LLT_PLASTIC;
+    }
+
+    return LLT_UNDEFINED;
+}
+
+std::string Get_Color_Name(const DefaultColor color)
+{
+    switch (color) {
+    case COL_DEFAULT:
+        return N_("default");
+    case COL_WHITE:
+        return N_("white");
+    case COL_BLACK:
+        return N_("black");
+    case COL_RED:
+        return N_("red");
+    case COL_ORANGE:
+        return N_("orange");
+    case COL_YELLOW:
+        return N_("yellow");
+    case COL_GREEN:
+        return N_("green");
+    case COL_BLUE:
+        return N_("blue");
+    case COL_BROWN:
+        return N_("brown");
+    case COL_GREY:
+        return N_("grey");
+    case COL_VIOLET:
+        return N_("violet");
+    default:
+        break;
+    }
+
+    return "";
+}
+
+DefaultColor Get_Color_Id(const std::string& str_color)
+{
+    if (str_color.compare("white") == 0) {
+        return COL_WHITE;
+    }
+    else if (str_color.compare("black") == 0) {
+        return COL_BLACK;
+    }
+    else if (str_color.compare("red") == 0) {
+        return COL_RED;
+    }
+    else if (str_color.compare("orange") == 0) {
+        return COL_ORANGE;
+    }
+    else if (str_color.compare("yellow") == 0) {
+        return COL_YELLOW;
+    }
+    else if (str_color.compare("green") == 0) {
+        return COL_GREEN;
+    }
+    else if (str_color.compare("blue") == 0) {
+        return COL_BLUE;
+    }
+    else if (str_color.compare("brown") == 0) {
+        return COL_BROWN;
+    }
+    else if (str_color.compare("grey") == 0) {
+        return COL_GREY;
+    }
+    else if (str_color.compare("violet") == 0) {
+        return COL_VIOLET;
+    }
+
+    return COL_DEFAULT;
+}
 
 std::string Get_Difficulty_Name(uint8_t difficulty)
 {

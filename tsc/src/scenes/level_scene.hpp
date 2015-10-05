@@ -20,7 +20,9 @@ namespace TSC {
 
     private:
         std::vector<cLevel*> m_active_levels;
-        // Current level is in gp_current_level.
+        // ↑ Current level is in gp_current_level.
+        sf::Text m_debug_playerpos_text;
+        sf::Font m_debug_playerpos_font;
 
         void Handle_Keydown_Event(sf::Event& evt);
         void Handle_Keyup_Event(sf::Event& evt);
