@@ -1,15 +1,15 @@
 [submodule "mruby/mruby"]
 	path = mruby/mruby
-	url = git://github.com/mruby/mruby.git
+	url = https://github.com/mruby/mruby.git
 [submodule "mruby/mgems/mruby-sleep"]
 	path = mruby/mgems/mruby-sleep
-	url = git://github.com/matsumoto-r/mruby-sleep.git
+	url = https://github.com/matsumoto-r/mruby-sleep.git
 [submodule "mruby/mgems/mruby-pcre-regexp"]
 	path = mruby/mgems/mruby-pcre-regexp
-	url = git://github.com/mattn/mruby-pcre-regexp.git
+	url = https://github.com/mattn/mruby-pcre-regexp.git
 [submodule "mruby/mgems/mruby-md5"]
 	path = mruby/mgems/mruby-md5
-	url = git://github.com/mattn/mruby-md5.git
+	url = https://github.com/mattn/mruby-md5.git
 [submodule "mruby/mgems/mruby-json"]
 	path = mruby/mgems/mruby-json
-	url = git://github.com/mattn/mruby-json.git
+	url = https://github.com/mattn/mruby-json.git

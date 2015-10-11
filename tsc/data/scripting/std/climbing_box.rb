@@ -32,14 +32,14 @@ module Std
     #   Hash for keyword arguments.
     #   [count]
     #     The number of sprites the plant shall have.
-    #   [middle_graphic = "ground/green_1/kplant.png"]
+    #   [middle_graphic = "ground/green_1/ladder.png"]
     #     Middle graphic of the plant.
-    #   [top_graphic = "ground/green_1/kplant_head.png"]
+    #   [top_graphic = "ground/green_1/ladder_head.png"]
     #     Top graphci of the plant.
     def initialize(box, opts)
       opts[:count]          || raise(ArgumentError, "Required keyword argument :count missing!")
-      opts[:middle_graphic] ||= "ground/green_1/kplant.png"
-      opts[:top_graphic]    ||= "ground/green_1/kplant_head.png"
+      opts[:middle_graphic] ||= "ground/green_1/ladder.png"
+      opts[:top_graphic]    ||= "ground/green_1/ladder_head.png"
 
       @activated = false
       @box = box.kind_of?(Integer) ? UIDS[box] : box
@@ -62,7 +62,7 @@ module Std
       # Top sprite
       top_sprite = Sprite.new(opts[:top_graphic])
       top_sprite.start_at(@sprites.last.x, @sprites.last.y - top_sprite.rect[3])
-      top_sprite.massive_type = :passive
+      top_sprite.massive_type = :climbable
       top_sprite.show
       @sprites << top_sprite
 

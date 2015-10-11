@@ -332,7 +332,7 @@ if $0 == __FILE__
   puts "Done."
 
   print "Copying graphics... "
-  cp this_dir + "../../data/pixmaps/game/items/moon_1.png", target_dir + "graphics"
+  cp this_dir + "../../data/pixmaps/game/items/cookie.png", target_dir + "graphics"
   cp this_dir + "../../data/pixmaps/enemy/furball/brown/turn.png", target_dir + "graphics/furball.png"
   cp this_dir + "../../data/pixmaps/enemy/eato/brown/3.png", target_dir + "graphics/eato.png"
   cp this_dir + "../../data/pixmaps/enemy/flyon/orange/open_1.png", target_dir + "graphics/flyon.png"

@@ -22,6 +22,9 @@
 /tsc/crossbuild
 /tsc/CMakeFiles
 
+# Alternate build directory
+/build
+
 # Dependencies
 /tsc/mruby
 /tsc/cegui

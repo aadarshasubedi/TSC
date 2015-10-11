@@ -1,0 +1,8 @@
+base green_1.png 0
+width 64
+height 64
+editor_tags world;hill
+name Green_hill_big_1
+type passive
+author skarfester
+license CC-BY_4.0

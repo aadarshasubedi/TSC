@@ -1,0 +1,8 @@
+base dune_2.png 0
+width 128
+height 64
+editor_tags world;sand;hill
+name Dune_big_1
+type passive
+author skarfester
+license CC-BY_4.0

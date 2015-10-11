@@ -653,6 +653,7 @@ cInfoMessage::cInfoMessage(cSprite_Manager* p_sprite_manager)
 
     m_text = "Test";
     m_alpha = -1;
+    m_display_time = 0.0f;
 
     m_background = new cMovingSprite(p_sprite_manager);
     m_background->Set_Ignore_Camera(true);
@@ -1014,7 +1015,7 @@ void cDebugDisplay::Set_Text(const std::string& ntext, float display_time /* = s
 
     if (m_text.empty()) {
         m_text = m_text_old;
-        m_text_old.empty();
+        m_text_old = "";
 
         m_counter = 0;
         return;

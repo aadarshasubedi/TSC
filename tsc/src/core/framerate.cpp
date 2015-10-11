@@ -74,6 +74,7 @@ cFramerate::cFramerate(void)
     m_max_elapsed_ticks = 100;
     m_speed_factor = 0.1f;
     m_force_speed_factor = 0.0f;
+    m_perf_last_ticks = 0;
 
     // create performance timers
     for (unsigned int i = 0; i < 24; i++) {

@@ -141,7 +141,15 @@ end
 desc "Create all files necessary for a release."
 task :release do
   version = ENV["VERSION"] || "#{TSC_VERSION_MAJOR}.#{TSC_VERSION_MINOR}.#{TSC_VERSION_PATCH}"
+  prerelease = version.include?("-")
   puts "Building release files for TSC version #{version}"
+
+  if prerelease
+    puts "This is a prerelease version."
+  else
+    print "This is the FINAL version. Are you sure you want to continue (y/n)? "
+    fail "Aborted by user" unless $stdin.gets.chomp.downcase == "y"
+  end
 
   if ENV["TSCSIGNKEY"]
     gpgkey = ENV["TSCSIGNKEY"].strip
@@ -198,7 +206,7 @@ task :release do
       cd "TSC-#{version}/tsc" do
         mkdir "build"
         cd "build" do
-          sh "cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=#{Dir.pwd}/testinstall .."
+          sh "cmake #{prerelease ? '-DCMAKE_BUILD_TYPE=Debug' : '-DCMAKE_BUILD_TYPE=Release'} -DCMAKE_INSTALL_PREFIX=#{Dir.pwd}/testinstall .."
           sh "make -j#{`nproc`.strip}"
           sh "make install"
 
@@ -221,8 +229,9 @@ task :release do
           ENV["PATH"] = crosspath
 
           cp "../cmake/toolchains/linux2mingw32.cmake", "."
-          sh "cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=linux2mingw32.cmake .."
+          sh "cmake #{prerelease ? '-DCMAKE_BUILD_TYPE=Debug' : '-DCMAKE_BUILD_TYPE=Release'} -DCMAKE_TOOLCHAIN_FILE=linux2mingw32.cmake .."
           sh "make -j#{`nproc`.strip}"
+          sh "i686-pc-mingw32-strip -x tsc.exe"
           sh "cpack -G NSIS"
         end
       end

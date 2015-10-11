@@ -168,45 +168,41 @@ executable that will run on Windows, and indeed this is how we produce
 the Windows releases. Regardless whether you compile
 from Git or from a release tarball, you will need a crosscompilation
 toolchain for that. We recommend you to use [MXE][2] for that, which
-includes all dependencies necessary for building TSC. Even more, I
-(Quintus) have set up an MXE fork that contains versions that I know
-to work with TSC.
+includes all dependencies necessary for building TSC.
 
-The following commands download and built the MXE environment I have
-prepared, including all dependencies needed for TSC.
+MXE is an ever-evolving distribution, so it’s better to use a version
+that is known to work. For this, we maintain [a slightly changed fork
+of MXE](https://github.com/Secretchronicles/mxe) that contains a
+branch named `tsc-building`. This branch is known to work for a
+successful crosscompilation, and contains only very little adjustments
+to upstream MXE.
+
+The following commands download our MXE and checks out the
+`tsc-building` branch.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-% mkdir ~/tsc-building
-% cd ~/tsc-building
-% git clone git://github.com/Quintus/mxe.git
-% cd mxe
-% git checkout tsc-building
-% make boost libxml++ glew cegui libpng freeimage sdl sdl_image sdl_mixer sdl_ttf nsis
+$ mkdir ~/tsc-cross
+$ cd ~/tsc-cross
+$ git clone git://github.com/Secretchronicles/mxe.git
+$ cd mxe
+$ git checkout tsc-building
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After that you can build MXE with all dependencies required for
+buildint TSC:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ make boost libxml++ glew cegui libpng freeimage sdl sdl_image sdl_mixer sdl_ttf nsis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This will take a long time.
 
-Now we have to work around bugs in CMake and CPack that don’t find
-`i686-pc-mingw32-pkg-config` and `i686-pc-mingw32-makensis`, but will
-only look for `pkg-config` and `makensis`. Do this:
+There’s a little annoyence with CMake not finding `pkg-config` and
+`makensis` in MXE’s default directory setup. We have added a small
+new task to MXE’s makefile to correct that, which you now need to run:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-% cd usr/bin
-% ln -s i686-pc-mingw32-makensis makensis
-% ln -s i686-pc-mingw32-pkg-config pkg-config
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-And then edit `i686-pc-mingw32-pkg-config` with your favourite
-editor. Replace the part that says
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-... exec pkg-config --static "$@"
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-with this:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-... exec /usr/bin/pkg-config --static "$@"
+$ make fixcmakelinks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ### Crosscompiling from a released tarball ###

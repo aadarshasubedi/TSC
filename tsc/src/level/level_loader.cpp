@@ -47,6 +47,7 @@ cLevelLoader::cLevelLoader()
     : xmlpp::SaxParser()
 {
     mp_level    = NULL;
+    m_in_script_tag = false;
 }
 
 cLevelLoader::~cLevelLoader()

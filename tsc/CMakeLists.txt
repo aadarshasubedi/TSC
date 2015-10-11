@@ -453,7 +453,7 @@ install(DIRECTORY "${TSC_SOURCE_DIR}/data/worlds/"
   DESTINATION ${sharedir}/worlds
   COMPONENT worlds)
 install(FILES "${TSC_SOURCE_DIR}/docs/man/tsc.6"
-  DESTINATION man/man6
+  DESTINATION share/man/man6
   COMPONENT base)
 install(FILES "${TSC_SOURCE_DIR}/extras/icons/tsc_icon_16.png"
   DESTINATION share/icons/hicolor/16x16/apps

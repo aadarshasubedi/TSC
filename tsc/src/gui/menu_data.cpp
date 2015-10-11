@@ -319,7 +319,7 @@ void cMenu_Main::Draw(void)
 cMenu_Start::cMenu_Start(void)
     : cMenu_Base()
 {
-
+    m_listbox_search_buffer_counter = 0.0f;
 }
 
 cMenu_Start::~cMenu_Start(void)
