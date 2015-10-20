@@ -62,7 +62,39 @@ namespace TSC {
         */
         void Parachute(bool enable);
 
+        /* downgrade state ( if small alex : dies )
+         * force : dies or a complete downgrade
+        */
+        virtual void DownGrade(bool force = 0);
+        /* downgrade state ( if small alex : dies )
+         * if delayed is set the downgrade is handled on the next game update
+         * force : Also kill big/fire/ice/etc Alex
+         * ignore_invincible: If Alex was just hurt, he is invicable for a short
+         * time and this method immediately returns usually without doing anything
+         * (this also applies to star effect). Setting `ignore_invicable' will make
+         * this method ignore this restriction. This does *not* affect god mode, which
+         * will always be honoured by this method (by doing nothing).
+        */
+        void DownGrade_Player(bool delayed = true, bool force = false, bool ignore_invicible = false);
 
+        /* Set the Type
+         * animate : show type change animation
+         * sound : if set the upgrade sound is played
+         * temp_power : set the temp power item
+         *
+         * The SpriteType argument function is only backwards compatibility,
+         * use the Alex_type one instead
+        */
+        void Set_Type(Alex_type new_type, bool animation = 1, bool sound = 1, bool temp_power = 0);
+        void Set_Type(SpriteType item_type, bool animation = 1, bool sound = 1, bool temp_power = 0);
+
+        // Destroys all Fire/Ice-balls
+        void Ball_Clear(void) const;
+
+        /* Draw an animation using the given new type
+         * ends with the new type set
+        */
+        void Draw_Animation(Alex_type new_mtype);
 
     protected:
         virtual void Update();
@@ -79,6 +111,8 @@ namespace TSC {
 
         // current Alex type
         Alex_type m_alex_type;
+        //  Alex type after the temporary powerup
+        Alex_type m_alex_type_temp_power;
 
         // true if player god mode is active
         bool m_god_mode;
