@@ -9,6 +9,7 @@
 #include "../objects/animated_actor.hpp"
 #include "../objects/box.hpp"
 #include "../scenes/scene.hpp"
+#include "../scenes/game_over_scene.hpp"
 #include "../core/collision.hpp"
 #include "../user/preferences.hpp"
 #include "../core/scene_manager.hpp"
@@ -1057,6 +1058,8 @@ void cLevel_Player::DownGrade_Player(bool delayed /* = true */, bool force /* = 
         return;
     }
 
+    // at this point Alex is sentenced to death.
+
     Set_Type(ALEX_DEAD, 0, 0);
     // OLD pHud_Time->Reset();
     // OLD pHud_Points->Clear();
@@ -1164,8 +1167,9 @@ animation_end:
 
     // game over
     if (m_lives < 0) {
-        //gp_app->Get_SceneManager().Push_Scene(new cGameOverScene());
-        std::cerr << "DEBUG: Lives < 0!" << std::endl;
+        cSceneManager& scene_manager = gp_app->Get_SceneManager();
+
+        scene_manager.Push_Scene(new cGameOverScene());
     }
 
     // clear
