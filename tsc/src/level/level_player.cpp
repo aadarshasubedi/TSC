@@ -1,6 +1,7 @@
 #include "../core/global_basic.hpp"
 #include "../core/global_game.hpp"
 #include "../core/property_helper.hpp"
+#include "../core/bintree.hpp"
 #include "../scripting/scriptable_object.hpp"
 #include "../core/file_parser.hpp"
 #include "../video/img_set.hpp"
@@ -11,6 +12,7 @@
 #include "../scenes/scene.hpp"
 #include "../scenes/game_over_scene.hpp"
 #include "../core/collision.hpp"
+#include "../level/level.hpp"
 #include "../user/preferences.hpp"
 #include "../core/scene_manager.hpp"
 #include "../core/tsc_app.hpp"
@@ -1076,8 +1078,9 @@ void cLevel_Player::DownGrade_Player(bool delayed /* = true */, bool force /* = 
         // OLD pAudio->Play_Sound(pPackage_Manager->Get_Music_Reading_Path("game/lost_1.ogg"), RID_ALEX_DEATH);
     }
 
-    // dying animation
-    Set_Image_Set("small_dead_left");
+    // dying animation.
+    move(0.0f, -13.0f);
+    Set_Image_Set("small_dead_right");
 
     /* TODO: Instead of making a mini mainloop here, add a function
      * to cSceneManager that allows disabling of the Update() step
@@ -1107,10 +1110,11 @@ void cLevel_Player::DownGrade_Player(bool delayed /* = true */, bool force /* = 
             // OLD }
         }
 
-        // move up
-        move(0.0f, -13.0f);
         // draw
+        stage.clear();
+        stage.setView(gp_current_level->Get_View());
         current_scene.Draw(stage);
+        stage.display();
         // OLD pFramerate->Update()
     }
 
