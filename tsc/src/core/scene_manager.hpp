@@ -57,6 +57,8 @@ namespace TSC {
         // Returns the time that was needed to handle the entire last
         // frame.
         inline float Get_Elapsed_Time() const {return m_elapsed_time;}
+
+        void Update_Framerate(); // TODO: this should be private...
     private:
         bool Handle_Global_Event(sf::Event& evt);
         unsigned int SFMLKey2CEGUIKey(const sf::Keyboard::Key& key);
@@ -66,6 +68,8 @@ namespace TSC {
         float m_speedfactor;
         float m_elapsed_time;
         unsigned int m_frames_counted;
+        float m_total_elapsed_time;
+        char m_fps_text[256];
         bool m_end_play;
 
         sf::Text m_framerate_text;
