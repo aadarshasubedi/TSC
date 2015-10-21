@@ -1115,7 +1115,7 @@ void cLevel_Player::DownGrade_Player(bool delayed /* = true */, bool force /* = 
         stage.setView(gp_current_level->Get_View());
         current_scene.Draw(stage);
         stage.display();
-        // OLD pFramerate->Update()
+        gp_app->Get_SceneManager().Update_Framerate();
     }
 
     // very small delay until falling animation
@@ -1178,7 +1178,6 @@ animation_end:
 
     // clear
     while (stage.pollEvent(input_event)) { /* Just pop all events */ }
-    // OLD // OLD pFramerate->Reset();
 
     // game over
     if (m_lives < 0) {
