@@ -5,7 +5,7 @@ namespace TSC {
 
     /**
      * Main class for managing the happenings in the game. Each state
-     * the game may has is represented by a scene that encapsulates
+     * the game may have is represented by a scene that encapsulates
      * all the information required for it.
      *
      * The scenes are managed by a stack, where the scene on top of
@@ -27,17 +27,17 @@ namespace TSC {
      *    game has a faster overall experience.
      *
      * The reasoning behind that factor is that objects moving on
-     * the screen do not move super-fast with a high FPS, and super-slow
-     * with a low FPS. To move over the same amount of pixels in the
-     * same time you need to do smaller movement steps with a higher
-     * FPS and smaller movement steps with a smaller FPS. To ease
+     * the screen do not move super-fast with a high FPS and do not move
+     * super-slow with a low FPS. To move over the same amount of pixels
+     * in the same time you need to do smaller movement steps with a
+     * higher FPS and larger movement steps with a smaller FPS. To ease
      * this calculation, you can just multiply your desired distance
      * with the speedfactor which you can retrieve from this class,
      * and the object will behave roughly the same relative to the
      * user’s screen and time regardless of the FPS.
      *
      * The calculation breaks if a frame needs longer than a second
-     * to be processed. But than you can’t play the game anyway.
+     * to be processed. But then you can’t play the game anyway.
      */
     class cSceneManager
     {

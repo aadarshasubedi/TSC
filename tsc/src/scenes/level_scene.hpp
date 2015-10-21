@@ -2,6 +2,9 @@
 #define TSC_SCENES_LEVEL_SCENE_HPP
 namespace TSC {
 
+    /**
+     * The Scene for the game’s played levels.
+     */
     class cLevelScene: public cScene
     {
     public:
