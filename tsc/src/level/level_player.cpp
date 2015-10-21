@@ -1124,48 +1124,62 @@ void cLevel_Player::DownGrade_Player(bool delayed /* = true */, bool force /* = 
     t.tv_nsec = 300000000; // 0.3 seconds
     nanosleep(&t, NULL);
 
-    // OLD pFramerate->Reset();
-    // OLD m_walk_count = 0.0f;
-    // OLD 
-    // OLD for (i = 0.0f; m_col_rect.m_y < pActive_Camera->m_y + game_res_h; i++) {
-    // OLD     while (SDL_PollEvent(&input_event)) {
-    // OLD         if (input_event.type == SDL_KEYDOWN) {
-    // OLD             if (input_event.key.keysym.sym == SDLK_ESCAPE) {
-    // OLD                 goto animation_end;
-    // OLD             }
-    // OLD             else if (input_event.key.keysym.sym == pPreferences->m_key_screenshot) {
-    // OLD                 pVideo->Save_Screenshot();
-    // OLD             }
-    // OLD         }
-    // OLD         else if (input_event.type == SDL_JOYBUTTONDOWN) {
-    // OLD             if (input_event.jbutton.button == pPreferences->m_joy_button_exit) {
-    // OLD                 goto animation_end;
-    // OLD             }
-    // OLD         }
-    // OLD     }
-    // OLD 
-    // OLD     m_walk_count += pFramerate->m_speed_factor * 0.75f;
-    // OLD 
-    // OLD     if (m_walk_count > 4.0f) {
-    // OLD         m_walk_count = 0.0f;
-    // OLD     }
-    // OLD 
-    // OLD     // move down
-    // OLD     Move(0.0f, 14.0f);
-    // OLD 
-    // OLD     if (m_walk_count > 2.0f) {
-    // OLD         Set_Image_Num(ALEX_IMG_DEAD);
-    // OLD     }
-    // OLD     else {
-    // OLD         Set_Image_Num(ALEX_IMG_DEAD + 1);
-    // OLD     }
-    // OLD 
-    // OLD     // draw
-    // OLD     Draw_Game();
-    // OLD     // render
-    // OLD     pVideo->Render();
-    // OLD     pFramerate->Update();
-    // OLD }
+    m_walk_count = 0.0f;
+
+    // Move Alex down until he leaves the window (or rather the view)
+    // ...and a mini mainloop again...
+    while (true) {
+        sf::FloatRect colrect = Get_Transformed_Collision_Rect();
+        const sf::View& current_view = gp_current_level->Get_View();
+        float lower_screen_y = current_view.getCenter().y + current_view.getSize().y / 2.0; // add half the size of the view to the center
+
+        if (colrect.top > lower_screen_y) {
+            break;
+        }
+
+        cPreferences& preferences = gp_app->Get_Preferences();
+        cScene& current_scene = gp_app->Get_SceneManager().Current_Scene();
+
+        while (stage.pollEvent(input_event)) {
+            if (input_event.type == sf::Event::KeyPressed) {
+                if (input_event.key.code == sf::Keyboard::Escape) {
+                    goto animation_end;
+                }
+                else if (input_event.key.code == preferences.m_key_screenshot) {
+                    // OLD pVideo->Save_Screenshot();
+                }
+            }
+            // OLD joystick stuff
+            // OLD else if (input_event.type == SDL_JOYBUTTONDOWN) {
+            // OLD     if (input_event.jbutton.button == pPreferences->m_joy_button_exit) {
+            // OLD         goto animation_end;
+            // OLD     }
+            // OLD }
+        }
+
+        m_walk_count += gp_app->Get_SceneManager().Get_Speedfactor() * 0.75f;
+
+        if (m_walk_count > 4.0f) {
+            m_walk_count = 0.0f;
+        }
+
+        // move down
+        move(0.0f, 14.0f);
+
+        if (m_walk_count > 2.0f) {
+            Set_Image_Set("small_dead_right");
+        }
+        else {
+            Set_Image_Set("small_dead_left");
+        }
+
+        // draw
+        stage.clear();
+        stage.setView(gp_current_level->Get_View());
+        current_scene.Draw(stage);
+        stage.display();
+        gp_app->Get_SceneManager().Update_Framerate();
+    }
 
 animation_end:
 
