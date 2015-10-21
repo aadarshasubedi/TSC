@@ -8,21 +8,6 @@ cScene::~cScene()
     //
 }
 
-void cScene::Handle_Event(sf::Event& evt)
-{
-    //
-}
-
-void cScene::Update(sf::RenderWindow& stage)
-{
-    //
-}
-
-void cScene::Draw(sf::RenderWindow& stage)
-{
-    //
-}
-
 /**
  * Return the name of this scene. This is only used for debugging the
  * scene stack. Please return a name that identifies your cScene

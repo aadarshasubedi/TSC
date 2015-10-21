@@ -177,8 +177,6 @@ void cLevelScene::Handle_Keyup_Event(sf::Event& evt)
 
 void cLevelScene::Update(sf::RenderWindow& stage)
 {
-    cScene::Update(stage);
-
     gp_current_level->Update();
     stage.setView(gp_current_level->Get_View());
 
@@ -202,7 +200,6 @@ void cLevelScene::Update(sf::RenderWindow& stage)
 
 void cLevelScene::Draw(sf::RenderWindow& stage)
 {
-    cScene::Draw(stage);
     // Draw the level elements themselves
     gp_current_level->Draw(stage);
 

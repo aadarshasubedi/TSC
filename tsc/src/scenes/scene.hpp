@@ -18,9 +18,9 @@ namespace TSC {
     {
     public:
         virtual ~cScene();
-        virtual void Handle_Event(sf::Event& evt);
-        virtual void Update(sf::RenderWindow& stage);
-        virtual void Draw(sf::RenderWindow& stage);
+        virtual void Handle_Event(sf::Event& evt) = 0;
+        virtual void Update(sf::RenderWindow& stage) = 0;
+        virtual void Draw(sf::RenderWindow& stage) = 0;
 
         virtual std::string Name() const;
     };

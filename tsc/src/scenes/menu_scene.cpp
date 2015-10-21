@@ -57,8 +57,6 @@ cMenuScene::~cMenuScene()
 
 void cMenuScene::Handle_Event(sf::Event& evt)
 {
-    cScene::Handle_Event(evt);
-
     switch(evt.type) {
     case sf::Event::KeyReleased:
         on_handle_key_released(evt);
@@ -70,8 +68,6 @@ void cMenuScene::Handle_Event(sf::Event& evt)
 
 void cMenuScene::Update(sf::RenderWindow& stage)
 {
-    cScene::Update(stage);
-
     if (m_is_growing) {
         m_scale_factor += 0.1f * gp_app->Get_SceneManager().Get_Speedfactor();
 
@@ -92,8 +88,6 @@ void cMenuScene::Update(sf::RenderWindow& stage)
 
 void cMenuScene::Draw(sf::RenderWindow& stage)
 {
-    cScene::Draw(stage);
-
     std::vector<sf::Sprite>::const_iterator iter;
     for(iter=m_menu_items.begin(); iter != m_menu_items.end(); iter++)
         stage.draw(*iter);
