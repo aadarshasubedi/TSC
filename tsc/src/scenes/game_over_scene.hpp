@@ -18,6 +18,8 @@ namespace TSC {
     private:
         sf::Sprite m_gameover_sprite;
         sf::Texture m_gameover_texture;
+
+        void on_handle_key_released(sf::Event& evt);
     };
 
 }

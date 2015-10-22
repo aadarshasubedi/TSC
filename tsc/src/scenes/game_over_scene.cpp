@@ -52,4 +52,20 @@ void cGameOverScene::Draw(sf::RenderWindow& stage)
 
 void cGameOverScene::Handle_Event(sf::Event& evt)
 {
+    cScene::Handle_Event(evt);
+
+    switch (evt.type) {
+        case sf::Event::KeyReleased:
+            on_handle_key_released(evt);
+            break;
+    default:
+        break;
+    }
+}
+
+void cGameOverScene::on_handle_key_released(sf::Event& evt)
+{
+    if (evt.key.code == sf::Keyboard::Escape) {
+        Finish();
+    }
 }
