@@ -92,6 +92,15 @@ void cSceneManager::Play(sf::RenderWindow& stage)
         // Get scene on top of the stack.
         cScene* p_current_scene = m_scenes_stack.top();
 
+        /* If this is a finished scene, pop it and delete it, and then
+         * try again with the next scene. A finished scene is not allowed
+         * to update or draw. It just needs to be freed. */
+        if (p_current_scene->Has_Finished()) {
+            delete Pop_Scene();
+            p_current_scene = NULL;
+            continue; // Continue with the next scene on the stack
+        }
+
         /* Event handling. Poll all events from SFML, and then ask
          * the global event handler to handle them. If the global
          * event handler doesn’t process them, hand them to the
