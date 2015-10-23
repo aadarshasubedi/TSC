@@ -82,6 +82,7 @@ void cSceneManager::Play(sf::RenderWindow& stage)
         // Measure time we needed for this frame
         m_elapsed_time = m_game_clock.restart().asMilliseconds();
         m_elapsed_time = 15; //FIXED VALUE
+
         //float current_ticks = m_game_clock.getElapsedTime().asMilliseconds();
         //float current_ticks = SDL_GetTicks();
         //m_elapsed_time = current_ticks - m_last_ticks;
@@ -90,7 +91,7 @@ void cSceneManager::Play(sf::RenderWindow& stage)
         // Calculate the framerate, i.e. the amount of frames we can do per second.
         total_elapsed_time += m_elapsed_time;
 
-        m_speedfactor = m_elapsed_time / (1000.0 / 32);
+        m_speedfactor = m_elapsed_time / (1000.0 / 32); //Calculate once per physics iteration.  32 corresonds to the value of m_fps_target in devel
 
         if (total_elapsed_time >= 1000.0f) {
 
