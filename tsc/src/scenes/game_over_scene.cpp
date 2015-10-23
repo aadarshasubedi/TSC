@@ -19,14 +19,31 @@
 
 using namespace TSC;
 
-cGameOverScene::cGameOverScene()
-    : mp_gameover_clock(NULL)
+/**
+ * Creates a new GameOver scene.
+ *
+ * \param screenshot
+ * Screenshot of the level at the time when Alex died. This
+ * will be *copied* into this scene object (not just a ref is saved,
+ * so that your scene can securely die without a memory issue).
+ * It is used as the background image of this scene then.
+ *
+ * \returns the new GameOver scene.
+ */
+cGameOverScene::cGameOverScene(const sf::Texture& screenshot)
+    : m_bg_screenshot_texture(screenshot), // copy
+      m_bg_screenshot_sprite(m_bg_screenshot_texture),
+      mp_gameover_clock(NULL)
 {
     m_gameover_texture.loadFromFile(gp_app->Get_ResourceManager().Get_Game_Pixmap("game/game_over.png").native());
 
     m_gameover_sprite.setTexture(m_gameover_texture);
     m_gameover_sprite.setOrigin(m_gameover_sprite.getLocalBounds().width / 2.0,
                                 m_gameover_sprite.getLocalBounds().height / 2.0);
+
+    // Replicate the last level’s background exactly by positioning
+    // the window-sized image at the origin of the window.
+    m_bg_screenshot_sprite.setPosition(0, 0);
 }
 
 cGameOverScene::~cGameOverScene()
@@ -60,6 +77,7 @@ void cGameOverScene::Update(sf::RenderWindow& stage)
 
 void cGameOverScene::Draw(sf::RenderTarget& stage)
 {
+    stage.draw(m_bg_screenshot_sprite);
     stage.draw(m_gameover_sprite);
 }
 

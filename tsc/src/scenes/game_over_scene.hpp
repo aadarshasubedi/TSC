@@ -8,7 +8,7 @@ namespace TSC {
     class cGameOverScene: public cScene
     {
     public:
-        cGameOverScene();
+        cGameOverScene(const sf::Texture& screenshot);
         virtual ~cGameOverScene();
 
         virtual void Handle_Event(sf::Event& evt);
@@ -16,8 +16,10 @@ namespace TSC {
         virtual void Draw(sf::RenderTarget& stage);
         virtual std::string Name() const;
     private:
-        sf::Sprite m_gameover_sprite;
         sf::Texture m_gameover_texture;
+        sf::Texture m_bg_screenshot_texture;
+        sf::Sprite m_gameover_sprite;
+        sf::Sprite m_bg_screenshot_sprite;
         sf::Clock* mp_gameover_clock;
 
         void on_handle_key_released(sf::Event& evt);

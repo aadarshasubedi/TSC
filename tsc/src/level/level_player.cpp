@@ -1186,8 +1186,20 @@ animation_end:
     // game over
     if (m_lives < 0) {
         cSceneManager& scene_manager = gp_app->Get_SceneManager();
+        sf::RenderTexture screenshot;
 
-        scene_manager.Push_Scene(new cGameOverScene());
+        // We’ll take a screenshot of all of this now and use that
+        // as the background for the GameOver screen.
+        if (!screenshot.create(stage.getSize().x, stage.getSize().y))
+            throw(std::runtime_error("Failed to take screenshot of level for game over screen!")); // TODO: Proper exception
+
+        // Same drawing process as to the window, just into the screenshot now
+        screenshot.clear();
+        screenshot.setView(gp_current_level->Get_View());
+        scene_manager.Current_Scene().Draw(screenshot);
+        screenshot.display();
+
+        scene_manager.Push_Scene(new cGameOverScene(screenshot.getTexture()));
     }
 
     // clear
