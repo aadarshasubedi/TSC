@@ -20,6 +20,7 @@
 using namespace TSC;
 
 cGameOverScene::cGameOverScene()
+    : mp_gameover_clock(NULL)
 {
     m_gameover_texture.loadFromFile(gp_app->Get_ResourceManager().Get_Game_Pixmap("game/game_over.png").native());
 
@@ -30,6 +31,8 @@ cGameOverScene::cGameOverScene()
 
 cGameOverScene::~cGameOverScene()
 {
+    if (mp_gameover_clock)
+        delete mp_gameover_clock;
 }
 
 std::string cGameOverScene::Name() const
@@ -41,6 +44,18 @@ void cGameOverScene::Update(sf::RenderWindow& stage)
 {
     sf::Vector2u size = stage.getSize();
     m_gameover_sprite.setPosition(size.x / 2.0, size.y / 2.0);
+
+    if (mp_gameover_clock) {
+        // Display it for 10 seconds (matches with the game over melody).
+        if (mp_gameover_clock->getElapsedTime().asSeconds() > 10.0) {
+            Finish();
+        }
+        // else do nothing, just show gameover screen
+    }
+    else {
+        // Start the timer on first scene use (not just scene on stack)
+        mp_gameover_clock = new sf::Clock();
+    }
 }
 
 void cGameOverScene::Draw(sf::RenderWindow& stage)
