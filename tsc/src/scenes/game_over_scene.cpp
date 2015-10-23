@@ -60,15 +60,11 @@ void cGameOverScene::Update(sf::RenderWindow& stage)
 
 void cGameOverScene::Draw(sf::RenderTarget& stage)
 {
-    cScene::Draw(stage);
-
     stage.draw(m_gameover_sprite);
 }
 
 void cGameOverScene::Handle_Event(sf::Event& evt)
 {
-    cScene::Handle_Event(evt);
-
     switch (evt.type) {
         case sf::Event::KeyReleased:
             on_handle_key_released(evt);
