@@ -13,7 +13,7 @@ namespace TSC {
 
         virtual void Handle_Event(sf::Event& evt);
         virtual void Update(sf::RenderWindow& stage);
-        virtual void Draw(sf::RenderWindow& stage);
+        virtual void Draw(sf::RenderTarget& stage);
         virtual std::string Name() const;
 
         void Add_Level(const std::string& levelname);

@@ -41,7 +41,7 @@ namespace TSC {
         // OLD }
 
         // draw
-        virtual void Draw(sf::RenderWindow& stage);
+        virtual void Draw(sf::RenderTarget& stage);
 
     protected:
         // save to XML node inherited

@@ -21,7 +21,7 @@ namespace TSC {
         bool operator!=(const cLevel& other) const;
 
         void Update();
-        void Draw(sf::RenderWindow& stage) const;
+        void Draw(sf::RenderTarget& stage) const;
 
         inline std::string Name() const {return path_to_utf8(m_level_filename.stem());}
         void Sort_Z_Elements();

@@ -70,7 +70,7 @@ void cEnemyStopper::Init(void)
     Set_Collision_Rect(sf::FloatRect(0, 0, 15.0f, 15.0f));
 }
 
-void cEnemyStopper::Draw(sf::RenderWindow& stage)
+void cEnemyStopper::Draw(sf::RenderTarget& stage)
 {
     cActor::Draw(stage);
 }

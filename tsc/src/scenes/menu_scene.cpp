@@ -86,7 +86,7 @@ void cMenuScene::Update(sf::RenderWindow& stage)
     m_menu_items[m_selected_item_id].setScale(m_scale_factor, m_scale_factor);
 }
 
-void cMenuScene::Draw(sf::RenderWindow& stage)
+void cMenuScene::Draw(sf::RenderTarget& stage)
 {
     std::vector<sf::Sprite>::const_iterator iter;
     for(iter=m_menu_items.begin(); iter != m_menu_items.end(); iter++)

@@ -15,7 +15,7 @@ namespace TSC {
         cSpriteActor(XmlAttributes& attributes, cLevel& level, const std::string type_name = "sprite");
         virtual ~cSpriteActor();
 
-        virtual void Draw(sf::RenderWindow& stage) const;
+        virtual void Draw(sf::RenderTarget& stage) const;
         virtual void Added_To_Level(cLevel* p_level, const unsigned long& uid);
 
         void Set_Dimensions(int width, int height);

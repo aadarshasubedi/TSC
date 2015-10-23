@@ -21,7 +21,7 @@ namespace TSC {
         virtual ~cScene();
         virtual void Handle_Event(sf::Event& evt) = 0;
         virtual void Update(sf::RenderWindow& stage) = 0;
-        virtual void Draw(sf::RenderWindow& stage) = 0;
+        virtual void Draw(sf::RenderTarget& stage) = 0;
 
         bool Has_Finished() const;
         void Finish();

@@ -81,7 +81,7 @@ void cStaticActor::Set_Texture(fs::path relative_texture_path)
     mp_texture = &txtinfo;
 }
 
-void cStaticActor::Draw(sf::RenderWindow& stage) const
+void cStaticActor::Draw(sf::RenderTarget& stage) const
 {
     cSpriteActor::Draw(stage);
 }

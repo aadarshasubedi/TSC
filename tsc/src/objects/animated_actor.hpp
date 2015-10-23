@@ -22,7 +22,7 @@ namespace TSC {
         cAnimatedActor(XmlAttributes& attributes, cLevel& level, const std::string type_name = "animatedsprite");
         virtual ~cAnimatedActor();
 
-        virtual void Draw(sf::RenderWindow& stage) const;
+        virtual void Draw(sf::RenderTarget& stage) const;
         virtual void Update();
 
         virtual void Set_Image_Set_Image(const struct ConfiguredTexture* p_new_image, bool new_startimage = false);

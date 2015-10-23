@@ -58,7 +58,7 @@ void cGameOverScene::Update(sf::RenderWindow& stage)
     }
 }
 
-void cGameOverScene::Draw(sf::RenderWindow& stage)
+void cGameOverScene::Draw(sf::RenderTarget& stage)
 {
     cScene::Draw(stage);
 

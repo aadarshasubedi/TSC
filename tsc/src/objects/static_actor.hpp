@@ -14,7 +14,7 @@ namespace TSC {
         cStaticActor(boost::filesystem::path relative_texture_path);
         virtual ~cStaticActor();
 
-        virtual void Draw(sf::RenderWindow& stage) const;
+        virtual void Draw(sf::RenderTarget& stage) const;
 
         void Set_Texture(boost::filesystem::path relative_texture_path);
         inline const ConfiguredTexture* Get_Texture() const {return mp_texture;} // Use Set_Texture() to change things!

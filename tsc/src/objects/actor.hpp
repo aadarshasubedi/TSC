@@ -54,7 +54,7 @@ namespace TSC {
         bool operator!=(const cActor& other) const;
 
         void Do_Update();
-        virtual void Draw(sf::RenderWindow& stage) const;
+        virtual void Draw(sf::RenderTarget& stage) const;
         virtual void Added_To_Level(cLevel* p_level, const unsigned long& uid);
 
         bool Handle_Collision(cCollision* p_collision);

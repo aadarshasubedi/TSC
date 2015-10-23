@@ -66,7 +66,7 @@ namespace TSC {
         // update
         virtual void Update();
         // draw
-        virtual void Draw(sf::RenderWindow& stage) const;
+        virtual void Draw(sf::RenderTarget& stage) const;
 
         // Generate activation Particles
         void Generate_Activation_Particles(void);

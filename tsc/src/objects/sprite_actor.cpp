@@ -52,7 +52,7 @@ void cSpriteActor::Added_To_Level(cLevel* p_level, const unsigned long& uid)
     cActor::Added_To_Level(p_level, uid);
 }
 
-void cSpriteActor::Draw(sf::RenderWindow& stage) const
+void cSpriteActor::Draw(sf::RenderTarget& stage) const
 {
     if (!m_invisible) {
         stage.draw(m_sprite, getTransform()); // <3 SFML. This allows us to apply the same transformations that affect the collision rectangle to also affect the sprite.

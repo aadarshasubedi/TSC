@@ -211,7 +211,7 @@ void cLevel::Update()
     m_camera_view.setCenter(mp_level_player->getPosition());
 }
 
-void cLevel::Draw(sf::RenderWindow& stage) const
+void cLevel::Draw(sf::RenderTarget& stage) const
 {
     // 1. Draw backgrounds
     std::vector<sf::Sprite*>::const_iterator bgiter;

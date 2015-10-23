@@ -372,7 +372,7 @@ void cBaseBox::Update(void)
     Update_Collision();
 }
 
-void cBaseBox::Draw(sf::RenderWindow& stage) const
+void cBaseBox::Draw(sf::RenderTarget& stage) const
 {
     // cSpriteActor::Draw() takes care of not drawing m_invisible actors.
     cAnimatedActor::Draw(stage);

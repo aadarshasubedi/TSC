@@ -196,7 +196,7 @@ void cActor::Update_Position()
  * Draw this actor onto the given window. By default, draws
  * the collision rect in debug mode.
  */
-void cActor::Draw(sf::RenderWindow& stage) const
+void cActor::Draw(sf::RenderTarget& stage) const
 {
     if (gp_app->Is_Debug_Mode()) {
         stage.draw(m_debug_colrect_shape, getTransform());

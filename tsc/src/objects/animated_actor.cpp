@@ -52,7 +52,7 @@ std::string cAnimatedActor::Get_Identity(void)
     return ss.str();
 }
 
-void cAnimatedActor::Draw(sf::RenderWindow& stage) const
+void cAnimatedActor::Draw(sf::RenderTarget& stage) const
 {
     if (m_named_ranges.empty()) {
         std::cerr << "Warning: Objekt '" << m_name << "' is an animated sprite with an empty imageset list!" << std::endl;

@@ -205,7 +205,7 @@ void cLevelScene::Update(sf::RenderWindow& stage)
     }
 }
 
-void cLevelScene::Draw(sf::RenderWindow& stage)
+void cLevelScene::Draw(sf::RenderTarget& stage)
 {
     // Draw the level elements themselves
     gp_current_level->Draw(stage);

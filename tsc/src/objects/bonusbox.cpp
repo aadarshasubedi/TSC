@@ -392,7 +392,7 @@ void cBonusBox::Update(void)
     cBaseBox::Update();
 }
 
-void cBonusBox::Draw(sf::RenderWindow& stage) const
+void cBonusBox::Draw(sf::RenderTarget& stage) const
 {
     // OLD for (MovingSpriteList::iterator itr = m_active_items.begin(); itr != m_active_items.end(); ++itr) {
     // OLD     cMovingSprite* obj = (*itr);

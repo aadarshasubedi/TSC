@@ -66,7 +66,7 @@ namespace TSC {
         // update
         virtual void Update();
         // draw
-        virtual void Draw(sf::RenderWindow& stage) const;
+        virtual void Draw(sf::RenderTarget& stage) const;
 
         // OLD // editor activation
         // OLD virtual void Editor_Activate(void);
