@@ -39,6 +39,7 @@ set(TSC_VERSION_POSTFIX "dev")
 option(ENABLE_MRUBY "Enable the MRuby scripting engine" ON)
 option(ENABLE_NLS "Enable translations and localisations" ON)
 set(FIXED_DATA_DIR "" CACHE FILEPATH "Enforce a static directory to look up graphics, music, etc. under rather than having TSC determine it dynamically.")
+set(FIXED_DATA_DIR "/home/datahead/TSC-Release/TSC/tsc/data")
 set(BINARY_DIR "" CACHE FILEPATH "Enforce a path to install the binary to. If you use this, you MUST also set FIXED_DATA_DIR.")
 
 #FIXME: Actually use ENABLE_MRUBY

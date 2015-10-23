@@ -17,6 +17,8 @@
 #include "tsc_app.hpp"
 #include "scene_manager.hpp"
 
+//#include <SDL.h>
+
 using namespace TSC;
 
 cSceneManager::cSceneManager()
@@ -24,6 +26,7 @@ cSceneManager::cSceneManager()
     m_end_play = false;
     m_frames_counted = 0;
     m_elapsed_time = 0;
+    m_last_ticks = 0;
 }
 
 /**
@@ -77,19 +80,38 @@ void cSceneManager::Play(sf::RenderWindow& stage)
     char fps_text[256];
     while (!m_end_play) {
         // Measure time we needed for this frame
-        m_elapsed_time = m_game_clock.restart().asSeconds();
+        m_elapsed_time = m_game_clock.restart().asMilliseconds();
+        m_elapsed_time = 15; //FIXED VALUE
+        //float current_ticks = m_game_clock.getElapsedTime().asMilliseconds();
+        //float current_ticks = SDL_GetTicks();
+        //m_elapsed_time = current_ticks - m_last_ticks;
+        //m_last_ticks = current_ticks;
 
         // Calculate the framerate, i.e. the amount of frames we can do per second.
         total_elapsed_time += m_elapsed_time;
-        if (total_elapsed_time >= 1.0f) {
-            m_speedfactor = total_elapsed_time / m_frames_counted;
 
-            sprintf(fps_text, "FPS: %d Speedfactor: %f", m_frames_counted, m_speedfactor);
+        m_speedfactor = m_elapsed_time / (1000.0 / 32);
+
+        if (total_elapsed_time >= 1000.0f) {
+
+            //sprintf(fps_text, "FPS: %d Speedfactor: %f", m_frames_counted, m_speedfactor);
             m_framerate_text.setString(fps_text);
+
+            cout << "-------------------------------" << endl;
+            cout << "feature-sfml-port:" << endl;
+            cout << "Elapsed Time: " << m_elapsed_time << endl;
+            cout << "Speed factor: " << m_speedfactor << endl;
+            cout << "FPS Reported: " << m_frames_counted << endl;
+            cout << "-------------------------------" << endl;
 
             m_frames_counted = 0;
             total_elapsed_time = 0.0f;
+
+
         }
+
+
+
         m_frames_counted++;
 
         /*

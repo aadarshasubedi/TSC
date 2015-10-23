@@ -65,6 +65,7 @@ namespace TSC {
         sf::Clock m_game_clock;
         float m_speedfactor;
         float m_elapsed_time;
+        float m_last_ticks;
         unsigned int m_frames_counted;
         bool m_end_play;
 
