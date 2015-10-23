@@ -73,24 +73,10 @@ void cSceneManager::Play(sf::RenderWindow& stage)
     m_framerate_text.setString("FPS: 0");
 
     // Main loop
-    float total_elapsed_time = 0.0f;
-    char fps_text[256];
+    m_total_elapsed_time = 0.0f;
+    memset(m_fps_text, '\0', 256);
     while (!m_end_play) {
-        // Measure time we needed for this frame
-        m_elapsed_time = m_game_clock.restart().asSeconds();
-
-        // Calculate the framerate, i.e. the amount of frames we can do per second.
-        total_elapsed_time += m_elapsed_time;
-        if (total_elapsed_time >= 1.0f) {
-            m_speedfactor = total_elapsed_time / m_frames_counted;
-
-            sprintf(fps_text, "FPS: %d Speedfactor: %f", m_frames_counted, m_speedfactor);
-            m_framerate_text.setString(fps_text);
-
-            m_frames_counted = 0;
-            total_elapsed_time = 0.0f;
-        }
-        m_frames_counted++;
+        Update_Framerate();
 
         /*
           // Debugging the speedfactor. The below code forces a pause to
@@ -105,6 +91,15 @@ void cSceneManager::Play(sf::RenderWindow& stage)
 
         // Get scene on top of the stack.
         cScene* p_current_scene = m_scenes_stack.top();
+
+        /* If this is a finished scene, pop it and delete it, and then
+         * try again with the next scene. A finished scene is not allowed
+         * to update or draw. It just needs to be freed. */
+        if (p_current_scene->Has_Finished()) {
+            delete Pop_Scene();
+            p_current_scene = NULL;
+            continue; // Continue with the next scene on the stack
+        }
 
         /* Event handling. Poll all events from SFML, and then ask
          * the global event handler to handle them. If the global
@@ -150,6 +145,30 @@ void cSceneManager::Play(sf::RenderWindow& stage)
 
     // Applause!
     stage.close();
+}
+
+/**
+ * Update the framerate and the speedfactor values, and their
+ * textual debugging representation.
+ */
+void cSceneManager::Update_Framerate()
+{
+    // Measure time we needed for this frame
+    m_elapsed_time = m_game_clock.restart().asSeconds();
+
+    // Calculate the framerate, i.e. the amount of frames we can do per second.
+    m_total_elapsed_time += m_elapsed_time;
+    if (m_total_elapsed_time >= 1.0f) {
+        m_speedfactor = m_total_elapsed_time / m_frames_counted;
+
+        sprintf(m_fps_text, "FPS: %d Speedfactor: %f", m_frames_counted, m_speedfactor);
+        m_framerate_text.setString(m_fps_text);
+
+        m_frames_counted = 0;
+        m_total_elapsed_time = 0.0f;
+    }
+
+    m_frames_counted++;
 }
 
 /**

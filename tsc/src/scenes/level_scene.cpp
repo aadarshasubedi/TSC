@@ -177,6 +177,13 @@ void cLevelScene::Handle_Keyup_Event(sf::Event& evt)
 
 void cLevelScene::Update(sf::RenderWindow& stage)
 {
+    // If Alex is dead, end the scene. There is nothing
+    // more to do for us.
+    if (gp_current_level->Get_Player()->m_alex_type == ALEX_DEAD) {
+        Finish();
+        return;
+    }
+
     gp_current_level->Update();
     stage.setView(gp_current_level->Get_View());
 

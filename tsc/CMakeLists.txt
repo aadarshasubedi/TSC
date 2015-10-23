@@ -327,6 +327,7 @@ set(tsc_sources
   "src/scenes/scene.cpp"
   "src/scenes/level_scene.cpp"
   "src/scenes/menu_scene.cpp"
+  "src/scenes/game_over_scene.cpp"
 
   "src/scripting/scriptable_object.cpp"
 

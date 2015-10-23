@@ -1,13 +1,18 @@
 #include "../core/global_basic.hpp"
 #include "../core/global_game.hpp"
 #include "../core/property_helper.hpp"
+#include "../core/bintree.hpp"
 #include "../scripting/scriptable_object.hpp"
 #include "../core/file_parser.hpp"
 #include "../video/img_set.hpp"
 #include "../objects/actor.hpp"
 #include "../objects/sprite_actor.hpp"
 #include "../objects/animated_actor.hpp"
+#include "../objects/box.hpp"
+#include "../scenes/scene.hpp"
+#include "../scenes/game_over_scene.hpp"
 #include "../core/collision.hpp"
+#include "../level/level.hpp"
 #include "../user/preferences.hpp"
 #include "../core/scene_manager.hpp"
 #include "../core/tsc_app.hpp"
@@ -1003,4 +1008,419 @@ void cLevel_Player::Parachute(bool enable)
     else {
         m_gravity_max = 25.0f;
     }
+}
+
+void cLevel_Player::DownGrade(bool force /* = 0 */)
+{
+    DownGrade_Player(true, force);
+}
+
+void cLevel_Player::DownGrade_Player(bool delayed /* = true */, bool force /* = false */, bool ignore_invincible /* = false */)
+{
+    if (m_god_mode)
+        return;
+    if (m_invincible && !ignore_invincible)
+        return;
+
+    // already dead
+    if (m_alex_type == ALEX_DEAD) {
+        return;
+    }
+
+    /* FIXME: Does it have any use to delay the downgrade to the next
+     * frame? I guess not, so I comment this out now... -- Quintus
+    if (delayed) {
+        Game_Action = GA_DOWNGRADE_PLAYER;
+        if (force) {
+            Game_Action_Data_Middle.add("downgrade_force", "1");
+            if (ignore_invincible) {
+                Game_Action_Data_Middle.add("downgrade_ignore_invincible", "1");
+            }
+        }
+
+        return;
+        } */
+
+    // if not weakest state or not forced
+    if (m_alex_type != ALEX_SMALL && !force) {
+        // OLD pAudio->Play_Sound("player/powerdown.ogg", RID_ALEX_POWERDOWN);
+
+        // power down
+        Set_Type(ALEX_SMALL);
+
+        m_invincible = speedfactor_fps * 2.5f;
+        m_invincible_mod = 0.0f;
+
+        // OLD pHud_Itembox->Request_Item();
+
+        // Issue the Downgrade event
+        // OLD Scripting::cDowngrade_Event evt(1, 2); // downgrades = 1, max. downgrades = 2
+        // OLD evt.Fire(pActive_Level->m_mruby, this);
+
+        return;
+    }
+
+    // at this point Alex is sentenced to death.
+
+    Set_Type(ALEX_DEAD, 0, 0);
+    // OLD pHud_Time->Reset();
+    // OLD pHud_Points->Clear();
+    Ball_Clear();
+    // OLD pHud_Lives->Add_Lives(-1);
+    // OLD pAudio->Fadeout_Music(1700);
+
+    // lost a live
+    if (m_lives >= 0) {
+        // OLD pAudio->Play_Sound(utf8_to_path("player/dead.ogg"), RID_ALEX_DEATH);
+    }
+    // game over
+    else {
+        // OLD pAudio->Play_Sound(pPackage_Manager->Get_Music_Reading_Path("game/lost_1.ogg"), RID_ALEX_DEATH);
+    }
+
+    // dying animation.
+    move(0.0f, -13.0f);
+    Set_Image_Set("small_dead_right");
+
+    /* TODO: Instead of making a mini mainloop here, add a function
+     * to cSceneManager that allows disabling of the Update() step
+     * in the main loop, as this is all what this really wants. */
+
+    float i;
+    sf::Event input_event;
+    sf::RenderWindow& stage = gp_app->Get_RenderWindow();
+    for(i = 0.0f; i < 7.0f; i += gp_app->Get_SceneManager().Get_Speedfactor()) {
+        cPreferences& preferences = gp_app->Get_Preferences();
+        cScene& current_scene = gp_app->Get_SceneManager().Current_Scene();
+
+        while (stage.pollEvent(input_event)) {
+            if (input_event.type == sf::Event::KeyPressed) {
+                if (input_event.key.code == sf::Keyboard::Escape) {
+                    goto animation_end;
+                }
+                else if (input_event.key.code == preferences.m_key_screenshot) {
+                    // OLD pVideo->Save_Screenshot();
+                }
+            }
+            // OLD joystick stuff
+            // OLD else if (input_event.type == SDL_JOYBUTTONDOWN) {
+            // OLD     if (input_event.jbutton.button == pPreferences->m_joy_button_exit) {
+            // OLD         goto animation_end;
+            // OLD     }
+            // OLD }
+        }
+
+        // draw
+        stage.clear();
+        stage.setView(gp_current_level->Get_View());
+        current_scene.Draw(stage);
+        stage.display();
+        gp_app->Get_SceneManager().Update_Framerate();
+    }
+
+    // very small delay until falling animation
+    struct timespec t;
+    t.tv_sec = 0;
+    t.tv_nsec = 300000000; // 0.3 seconds
+    nanosleep(&t, NULL);
+
+    m_walk_count = 0.0f;
+
+    // Move Alex down until he leaves the window (or rather the view)
+    // ...and a mini mainloop again...
+    while (true) {
+        sf::FloatRect colrect = Get_Transformed_Collision_Rect();
+        const sf::View& current_view = gp_current_level->Get_View();
+        float lower_screen_y = current_view.getCenter().y + current_view.getSize().y / 2.0; // add half the size of the view to the center
+
+        if (colrect.top > lower_screen_y) {
+            break;
+        }
+
+        cPreferences& preferences = gp_app->Get_Preferences();
+        cScene& current_scene = gp_app->Get_SceneManager().Current_Scene();
+
+        while (stage.pollEvent(input_event)) {
+            if (input_event.type == sf::Event::KeyPressed) {
+                if (input_event.key.code == sf::Keyboard::Escape) {
+                    goto animation_end;
+                }
+                else if (input_event.key.code == preferences.m_key_screenshot) {
+                    // OLD pVideo->Save_Screenshot();
+                }
+            }
+            // OLD joystick stuff
+            // OLD else if (input_event.type == SDL_JOYBUTTONDOWN) {
+            // OLD     if (input_event.jbutton.button == pPreferences->m_joy_button_exit) {
+            // OLD         goto animation_end;
+            // OLD     }
+            // OLD }
+        }
+
+        m_walk_count += gp_app->Get_SceneManager().Get_Speedfactor() * 0.75f;
+
+        if (m_walk_count > 4.0f) {
+            m_walk_count = 0.0f;
+        }
+
+        // move down
+        move(0.0f, 14.0f);
+
+        if (m_walk_count > 2.0f) {
+            Set_Image_Set("small_dead_right");
+        }
+        else {
+            Set_Image_Set("small_dead_left");
+        }
+
+        // draw
+        stage.clear();
+        stage.setView(gp_current_level->Get_View());
+        current_scene.Draw(stage);
+        stage.display();
+        gp_app->Get_SceneManager().Update_Framerate();
+    }
+
+animation_end:
+
+    // game over
+    if (m_lives < 0) {
+        cSceneManager& scene_manager = gp_app->Get_SceneManager();
+
+        scene_manager.Push_Scene(new cGameOverScene());
+    }
+
+    // clear
+    while (stage.pollEvent(input_event)) { /* Just pop all events */ }
+
+    // game over
+    if (m_lives < 0) {
+    // OLD     Game_Action = GA_ENTER_MENU;
+    // OLD     // reset saved data
+    // OLD     Game_Action_Data_Middle.add("reset_save", "1");
+    // OLD     Game_Action_Data_Middle.add("load_menu", int_to_string(MENU_MAIN));
+
+        std::cerr << "DEBUG: GAME OVER activated." << std::endl;
+    }
+    // custom level
+    // OLD else if (Game_Mode_Type == MODE_TYPE_LEVEL_CUSTOM) {
+    // OLD     Game_Action = GA_ENTER_MENU;
+    // OLD     Game_Action_Data_Middle.add("load_menu", int_to_string(MENU_START));
+    // OLD     Game_Action_Data_Middle.add("menu_start_current_level", path_to_utf8(Trim_Filename(pActive_Level->m_level_filename, 0, 0)));
+    // OLD     // reset saved data
+    // OLD     Game_Action_Data_Middle.add("reset_save", "1");
+    // OLD }
+    // back to overworld
+    else {
+        Set_Type(ALEX_SMALL, 0, 0);
+        // OLD Game_Action = GA_ENTER_WORLD;
+        std::cerr << "DEBUG: Normal non-gameover death of Alex activated." << std::endl;
+    }
+
+    // OLD // fade out
+    // OLD Game_Action_Data_Start.add("music_fadeout", "1500");
+    // OLD Game_Action_Data_Start.add("screen_fadeout", CEGUI::PropertyHelper::intToString(EFFECT_OUT_BLACK));
+    // OLD Game_Action_Data_Start.add("screen_fadeout_speed", "3");
+    // OLD // delay unload level
+    // OLD Game_Action_Data_Middle.add("unload_levels", "1");
+    // OLD Game_Action_Data_End.add("screen_fadein", CEGUI::PropertyHelper::intToString(EFFECT_IN_BLACK));
+}
+
+void cLevel_Player::Ball_Clear(void) const
+{
+    // OLD // destroy all fireballs from the player
+    // OLD for (cSprite_List::iterator itr = m_sprite_manager->objects.begin(); itr != m_sprite_manager->objects.end(); ++itr) {
+    // OLD     cSprite* obj = (*itr);
+    // OLD 
+    // OLD     if (obj->m_type == TYPE_BALL) {
+    // OLD         cBall* ball = static_cast<cBall*>(obj);
+    // OLD 
+    // OLD         // if from player
+    // OLD         if (ball->m_origin_type == TYPE_PLAYER) {
+    // OLD             obj->Destroy();
+    // OLD         }
+    // OLD     }
+    // OLD }
+}
+
+void cLevel_Player::Set_Type(SpriteType item_type, bool animation /* = 1 */, bool sound /* = 1 */, bool temp_power /* = 0 */)
+{
+    if (item_type == TYPE_PLAYER) {
+        Set_Type(ALEX_SMALL, animation, sound, temp_power);
+    }
+    else if (item_type == TYPE_MUSHROOM_DEFAULT) {
+        Set_Type(ALEX_BIG, animation, sound, temp_power);
+    }
+    else if (item_type == TYPE_MUSHROOM_BLUE) {
+        Set_Type(ALEX_ICE, animation, sound, temp_power);
+    }
+    else if (item_type == TYPE_MUSHROOM_GHOST) {
+        Set_Type(ALEX_GHOST, animation, sound, temp_power);
+    }
+    else if (item_type == TYPE_FIREPLANT) {
+        Set_Type(ALEX_FIRE, animation, sound, temp_power);
+    }
+}
+
+void cLevel_Player::Set_Type(Alex_type new_type, bool animation /* = 1 */, bool sound /* = 1 */, bool temp_power /* = 0 */)
+{
+    // already set
+    if (m_alex_type == new_type) {
+        return;
+    }
+
+    // play sound
+    if (sound) {
+        if (new_type == ALEX_BIG) {
+            // OLD pAudio->Play_Sound("item/mushroom.ogg", RID_MUSHROOM);
+        }
+        else if (new_type == ALEX_FIRE) {
+            // OLD pAudio->Play_Sound("item/fireplant.ogg", RID_FIREPLANT);
+        }
+        else if (new_type == ALEX_ICE) {
+            // OLD pAudio->Play_Sound("item/mushroom_blue.wav", RID_MUSHROOM_BLUE);
+        }
+        else if (new_type == ALEX_CAPE) {
+            // OLD pAudio->Play_Sound("item/feather.ogg", RID_FEATHER);
+        }
+        else if (new_type == ALEX_GHOST) {
+            // OLD pAudio->Play_Sound("item/mushroom_ghost.ogg", RID_MUSHROOM_GHOST);
+        }
+    }
+
+    if (!temp_power) {
+        // was flying
+        if (m_alex_type == ALEX_CAPE) {
+            Stop_Flying(0);
+        }
+    }
+
+    // remember old type
+    Alex_type old_type = m_alex_type;
+
+    // draw animation and set new type
+    if (animation) {
+        Draw_Animation(new_type);
+
+        if (temp_power) {
+            m_alex_type = old_type;
+            m_alex_type_temp_power = new_type;
+            // Draw_Animation ends with the new type images
+            Load_Images();
+        }
+
+    }
+    // only set type
+    else {
+        if (temp_power) {
+            m_alex_type_temp_power = new_type;
+        }
+        else {
+            m_alex_type = new_type;
+            Load_Images();
+        }
+    }
+
+    // nothing more needed for setting the temp power
+    if (temp_power) {
+        return;
+    }
+
+    // to ghost
+    if (m_alex_type == ALEX_GHOST) {
+        m_ghost_time = gp_app->Get_SceneManager().Get_Speedfactor() * 10;
+        m_alex_type_temp_power = old_type;
+    }
+    // was ghost
+    else if (old_type == ALEX_GHOST) {
+        m_ghost_time = 0;
+        m_ghost_time_mod = 0;
+        m_alex_type_temp_power = ALEX_DEAD;
+
+        // check if we were standing on ghost ground and now need to fall
+        // because the ground is gone when we materialize again.
+        if (mp_ground_object) {
+            cBaseBox* box = dynamic_cast<cBaseBox*>(mp_ground_object);
+
+            if (box) {
+                // ghost box
+                if (box->m_box_invisible == BOX_GHOST) {
+                    Reset_On_Ground();
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Freezes level gameplay and draws the animation for making Alex
+ * look different (e.g. the animation that plays when he collects
+ * an ice powerup).
+ */
+void cLevel_Player::Draw_Animation(Alex_type new_mtype)
+{
+    // already set or invalid
+    if (new_mtype == m_alex_type || m_alex_type == ALEX_DEAD || new_mtype == ALEX_DEAD) {
+        return;
+    }
+/*
+    Alex_type alex_type_old = m_alex_type;
+    bool parachute_old = m_parachute;
+
+    float posx_old = m_pos_x;
+    float posy_old = m_pos_y;
+
+    // Change_Size needs new state size
+    m_alex_type = alex_type_old;
+    Parachute(parachute_old);
+    Load_Images();
+
+    // correct position for bigger alex
+    if (alex_type_old == ALEX_SMALL && (new_mtype == ALEX_BIG || new_mtype == ALEX_FIRE || new_mtype == ALEX_ICE || new_mtype == ALEX_CAPE || new_mtype == ALEX_GHOST)) {
+        Change_Size(-5.0f, -12.0f);
+    }
+    // correct position for small alex
+    else if ((alex_type_old == ALEX_BIG || alex_type_old == ALEX_FIRE || alex_type_old == ALEX_ICE || new_mtype == ALEX_CAPE || alex_type_old == ALEX_GHOST) && new_mtype == ALEX_SMALL) {
+        Change_Size(5.0f, 12.0f);
+    }
+
+    float posx_new = m_pos_x;
+    float posy_new = m_pos_y;
+
+    // draw animation
+    for (unsigned int i = 0; i < 7; i++) {
+        // set to current type
+        if (i % 2) {
+            m_alex_type = alex_type_old;
+            Parachute(parachute_old);
+            Load_Images();
+
+            Set_Pos(posx_old, posy_old);
+        }
+        // set to new type
+        else {
+            m_alex_type = new_mtype;
+            if (new_mtype != ALEX_CAPE) {
+                Parachute(0);
+            }
+            Load_Images();
+
+            // always set the ghost type to draw the ghost rect until it ends
+            if (i < 6 && alex_type_old == ALEX_GHOST) {
+                m_alex_type = alex_type_old;
+            }
+
+            Set_Pos(posx_new, posy_new);
+        }
+
+        // draw
+        Draw_Game();
+        pVideo->Render();
+
+        // frame delay
+        SDL_Delay(120);
+    }
+
+    pFramerate->Reset();
+    */
 }
