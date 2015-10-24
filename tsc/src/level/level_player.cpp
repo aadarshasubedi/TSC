@@ -923,6 +923,8 @@ void cLevel_Player::Start_Jump(float deaccel /* = 0.08f */)
 
 void cLevel_Player::Update_Jump(void)
 {
+    std::cout << "Level player speed factor: " << gp_app->Get_SceneManager().Get_Speedfactor() << std::endl;
+
     // jumping keytime
     if (m_up_key_time) {
         m_up_key_time -= gp_app->Get_SceneManager().Get_Speedfactor();
