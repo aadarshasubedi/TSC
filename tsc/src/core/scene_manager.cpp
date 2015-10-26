@@ -156,11 +156,20 @@ void cSceneManager::Update_Framerate()
     // Measure time we needed for this frame
     m_elapsed_time = m_game_clock.restart().asSeconds();
 
+    /*This used to be coded such that m_elapsed_time was in milliseconds.
+      The old equation was:
+      m_speedfactor = m_elapsed_time / (1000 / speedfactor_fps)
+      Since our elapsed time is now in seconds, this simplifies to the below
+      equation.
+      Note that the old code referred to m_fps_target, which was set to
+      speedfactor_fps.  We will need to decide if this abstraction is still
+      needed.
+     */
+    m_speedfactor = m_elapsed_time * speedfactor_fps;
+
     // Calculate the framerate, i.e. the amount of frames we can do per second.
     m_total_elapsed_time += m_elapsed_time;
     if (m_total_elapsed_time >= 1.0f) {
-        m_speedfactor = m_total_elapsed_time / m_frames_counted;
-
         sprintf(m_fps_text, "FPS: %d Speedfactor: %f", m_frames_counted, m_speedfactor);
         m_framerate_text.setString(m_fps_text);
 

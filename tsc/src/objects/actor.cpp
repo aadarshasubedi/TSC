@@ -179,8 +179,15 @@ void cActor::Update_Position()
      * algorithm actually yields true... Maybe this should be
      * reconsidered. */
 
-    // SFML transformation
-    move(m_velocity);
+    float speedFactor = gp_app->Get_SceneManager().Get_Speedfactor();
+
+    //Integrate to find the change in position based on time elapsed
+    sf::Vector2f deltaPosition = m_velocity;
+    deltaPosition.x *= speedFactor;
+    deltaPosition.y *= speedFactor;
+
+    // SFML transformation - Advance by the change in position
+    move(deltaPosition);
 
     // Check for collisions if this is an object that can collide.
     if (Is_Collidable())
