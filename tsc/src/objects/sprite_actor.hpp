@@ -32,7 +32,7 @@ namespace TSC {
         sf::Sprite m_sprite;
         bool m_invisible;
 
-    private:
+    public:
         void Init();
     };
 

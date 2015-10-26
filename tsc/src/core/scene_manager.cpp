@@ -80,8 +80,18 @@ void cSceneManager::Play(sf::RenderWindow& stage)
     char fps_text[256];
     while (!m_end_play) {
         // Measure time we needed for this frame
-        m_elapsed_time = m_game_clock.restart().asMilliseconds();
-        m_elapsed_time = 15; //FIXED VALUE
+        m_elapsed_time = m_game_clock.restart().asSeconds();
+        m_elapsed_time *= 1000;
+
+        //cout << "M elapsed time in milliseconds: " << m_elapsed_time << endl;
+
+        //float m_elapsed_time2 = m_game_clock.restart().asSeconds();
+
+        //cout << "M elapsed time in seconds: " << m_elapsed_time2 << endl;
+
+
+
+        //m_elapsed_time = 15; //FIXED VALUE
 
         //float current_ticks = m_game_clock.getElapsedTime().asMilliseconds();
         //float current_ticks = SDL_GetTicks();
@@ -92,18 +102,20 @@ void cSceneManager::Play(sf::RenderWindow& stage)
         total_elapsed_time += m_elapsed_time;
 
         m_speedfactor = m_elapsed_time / (1000.0 / 32); //Calculate once per physics iteration.  32 corresonds to the value of m_fps_target in devel
+        //m_speedfactor = 0.48;
+        //m_speedfactor = 0.0001;
 
         if (total_elapsed_time >= 1000.0f) {
 
             //sprintf(fps_text, "FPS: %d Speedfactor: %f", m_frames_counted, m_speedfactor);
             m_framerate_text.setString(fps_text);
 
-            cout << "-------------------------------" << endl;
-            cout << "feature-sfml-port:" << endl;
-            cout << "Elapsed Time: " << m_elapsed_time << endl;
-            cout << "Speed factor: " << m_speedfactor << endl;
-            cout << "FPS Reported: " << m_frames_counted << endl;
-            cout << "-------------------------------" << endl;
+            //cout << "-------------------------------" << endl;
+            //cout << "feature-sfml-port:" << endl;
+            //cout << "Elapsed Time: " << m_elapsed_time << endl;
+            //cout << "Speed factor: " << m_speedfactor << endl;
+            //cout << "FPS Reported: " << m_frames_counted << endl;
+            //cout << "-------------------------------" << endl;
 
             m_frames_counted = 0;
             total_elapsed_time = 0.0f;

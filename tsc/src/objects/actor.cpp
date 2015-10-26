@@ -179,8 +179,21 @@ void cActor::Update_Position()
      * algorithm actually yields true... Maybe this should be
      * reconsidered. */
 
+    float speedFactor = gp_app->Get_SceneManager().Get_Speedfactor();
+
+    //cout << "Actor speed factor: " << speedFactor << endl;
+
+    sf::Vector2f integratedVelocity = m_velocity;
+    integratedVelocity.x *= speedFactor;
+    integratedVelocity.y *= speedFactor;
+
+    //static int i = 0;
+    //if (i % 100 == 0)
+    //cout << "Player vel x: " << integratedVelocity.x << " Player vel y: " << integratedVelocity.y << endl;
+    //i++;
+
     // SFML transformation
-    move(m_velocity);
+    move(integratedVelocity);
 
     // Check for collisions if this is an object that can collide.
     if (Is_Collidable())
