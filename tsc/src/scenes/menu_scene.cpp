@@ -69,14 +69,14 @@ void cMenuScene::Handle_Event(sf::Event& evt)
 void cMenuScene::Update(sf::RenderWindow& stage)
 {
     if (m_is_growing) {
-        m_scale_factor += 0.1f * gp_app->Get_SceneManager().Get_Speedfactor();
+        m_scale_factor += GROWTH_FACTOR * gp_app->Get_SceneManager().Get_Speedfactor();
 
         if (m_scale_factor >= MAX_SCALE) {
             m_is_growing = false;
         }
     }
     else {
-        m_scale_factor -= 0.1f * gp_app->Get_SceneManager().Get_Speedfactor();
+        m_scale_factor -= GROWTH_FACTOR * gp_app->Get_SceneManager().Get_Speedfactor();
 
         if (m_scale_factor <= MIN_SCALE) {
             m_is_growing = true;

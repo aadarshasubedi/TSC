@@ -19,6 +19,7 @@ namespace TSC {
         const int MENUITEM_COUNT = 5;
         const float MAX_SCALE = 0.25f;
         const float MIN_SCALE = 0.1953f;
+        const float GROWTH_FACTOR = 0.005f;
         const char* TITLE_MUSIC = "game/menu.ogg";
 
         void on_handle_key_released(sf::Event& evt);
