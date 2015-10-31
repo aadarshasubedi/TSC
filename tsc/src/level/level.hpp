@@ -28,7 +28,8 @@ namespace TSC {
 
         void Add_Player(cLevel_Player* p_player);
         void Add_Actor(cActor* p_actor, const unsigned long& uid = 0);
-        void Check_Collisions_For_Actor(cActor& actor);
+        //void Check_Collisions_For_Actor(cActor& actor);
+        std::vector<cActor*> Get_Colliding_Actors(const sf::FloatRect& rect, const cActor* p_excluded = NULL);
 
         inline cLevel_Player* Get_Player(){return mp_level_player;}
         inline const cLevel_Player* Get_Player() const {return mp_level_player;}

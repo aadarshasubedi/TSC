@@ -174,24 +174,11 @@ void cActor::Update_Position()
     if (m_velocity.x == 0 && m_velocity.y == 0)
         return;
 
-    /* Moving first and then checking for collisions will result in
-     * the object being inside the wall before the collision detection
-     * algorithm actually yields true... Maybe this should be
-     * reconsidered. */
-
-    float speedFactor = gp_app->Get_SceneManager().Get_Speedfactor();
-
-    //Integrate to find the change in position based on time elapsed
-    sf::Vector2f deltaPosition = m_velocity;
-    deltaPosition.x *= speedFactor;
-    deltaPosition.y *= speedFactor;
-
-    // SFML transformation - Advance by the change in position
-    move(deltaPosition);
+    Collide_Move();
 
     // Check for collisions if this is an object that can collide.
-    if (Is_Collidable())
-        mp_level->Check_Collisions_For_Actor(*this);
+    //if (Is_Collidable())
+    //    mp_level->Check_Collisions_For_Actor(*this);
 
     // Check if we left the ground object
     Check_On_Ground();
@@ -812,4 +799,156 @@ bool cActor::Is_Collidable() const {
 void cActor::Update_Valid_Update()
 {
     m_update_is_valid = true;
+}
+
+/**
+ * Apply gathered Y velocity and velocity created by objects we are
+ * standing on. Takes special care of objects in the way, unless this
+ * actor is not Is_Collidable(), in which case it is just moved with
+ * the SFML move() transformation.
+ */
+void cActor::Collide_Move(void)
+{
+    // Do nothing if out of camera range
+    // OLD if (!m_valid_update || !Is_In_Range())
+    // OLD     return;
+
+    //Integrate to find the change in position based on time elapsed
+    float speedFactor = gp_app->Get_SceneManager().Get_Speedfactor();
+    sf::Vector2f deltaPosition = m_velocity;
+    deltaPosition.x *= speedFactor;
+    deltaPosition.y *= speedFactor;
+
+    if (Is_Collidable()) {
+        Col_Move(deltaPosition);
+        Move_With_Ground();
+    }
+    else {
+        // (Front-)Passive objects can’t logically collide, thus just move them.
+        move(deltaPosition);
+    }
+}
+
+/**
+ * Move this actor by the given delta in 1px steps to place it exactly
+ * next to any possible colliding object. If `force` is passed, this
+ * method ignores colliding objects and is thus equal to directly
+ * calling the SFML move() transformation.
+ */
+void cActor::Col_Move(const sf::Vector2f& delta_pos, bool force /* = false */)
+{
+    if (!force) {
+        // get all possible colliding items
+        sf::FloatRect complete_rect = Get_Transformed_Collision_Rect();
+
+        if (delta_pos.x > 0.0f) {
+            complete_rect.width += delta_pos.x;
+        }
+        else {
+            complete_rect.left -= delta_pos.x;
+        }
+
+        if (delta_pos.y > 0.0f) {
+            complete_rect.height += delta_pos.y;
+        }
+        else {
+            complete_rect.top -= delta_pos.y;
+        }
+
+        std::vector<cActor*> actor_list;
+        actor_list = mp_level->Get_Colliding_Actors(complete_rect, this);
+
+        if (actor_list.empty()) {
+            // No potential collisions found, we can directly move to
+            // the target position now with SFML transformation.
+            move(delta_pos);
+        }
+        else {
+            // Some objects are probably in the way. We need to go
+            // forward in small steps and see if there’s really a
+            // collision.
+            Col_Move_in_Steps(delta_pos, actor_list);
+        }
+    }
+    else { // force, i.e. ignore colliding objects
+        // SFML transformation
+        move(delta_pos);
+    }
+}
+
+/**
+ * Executes the 1px step movement mentioned in Col_Move(). Might be
+ * implemented more efficently (what about larger steps with recursion
+ * of this method with smaller steps?), and it currently also resets
+ * the non-collding axis 1px off.
+ *
+ * If a collision is found during the 1px movements, add it to the list
+ * of collisions to be handled in cLevel::Update().
+ */
+void cActor::Col_Move_in_Steps(sf::Vector2f delta_pos, const std::vector<cActor*>& actor_list)
+{
+    sf::FloatRect rect = Get_Transformed_Collision_Rect();
+    sf::Vector2f final_pos(rect.left + delta_pos.x, rect.top + delta_pos.y);
+
+    std::cout << "ACCEL: " << delta_pos.x << "|" << delta_pos.y << std::endl;
+    std::cout << "FINAL: " << final_pos.x << "|" << final_pos.y << std::endl;
+    std::cout << "CURRE: (" << rect.left << "|" << rect.top << "|" << rect.width << "|" << rect.height << ")" << std::endl;
+
+    /* If X movement is negative, count down until X is left from
+     * target X (in 1px steps). Otherwise, count up until X is right
+     * from target X. Same for Y. */
+    bool reached_x = false;
+    bool reached_y = false;
+    while (true) {
+        if (delta_pos.x < 0 && rect.left <= final_pos.x)
+            reached_x = true;
+        if (delta_pos.x >= 0 && rect.left >= final_pos.x)
+            reached_x = true;
+        if (delta_pos.y < 0 && rect.top <= final_pos.y)
+            reached_y = true;
+        if (delta_pos.y >= 0 && rect.top >= final_pos.y)
+            reached_y = true;
+        if (reached_x && reached_y)
+            break;
+
+        // Move diagonally to allow passing between two objects on the
+        // straight edges.
+        sf::Vector2f curmove;
+        if (delta_pos.x < 0 && !reached_x)
+            curmove.x = -1;
+        else if (delta_pos.x > 0 && !reached_x)
+            curmove.x = 1;
+
+        if (delta_pos.y < 0 && !reached_y)
+            curmove.y = -1;
+        else if (delta_pos.y > 0 && !reached_y)
+            curmove.y = 1;
+
+        move(curmove); // SFML transformation
+
+        std::cout << "ACCEL: " << delta_pos.x << "|" << delta_pos.y << std::endl;
+        std::cout << "FINAL: " << final_pos.x << "|" << final_pos.y << std::endl;
+        std::cout << "CURRE: (" << rect.left << "|" << rect.top << "|" << rect.width << "|" << rect.height << ")" << std::endl;
+
+        // If a collision is found, remember it.
+        std::vector<cActor*>::const_iterator iter;
+        rect = Get_Transformed_Collision_Rect();
+        for(iter=actor_list.begin(); iter != actor_list.end(); iter++) {
+            cActor* p_actor = *iter;
+
+            if (p_actor->Does_Collide(rect)) {
+                // TODO: What if both objects are moving towards one another?
+                mp_level->Add_Collision_If_Required(new cCollision(this, p_actor));
+                return;
+            }
+        }
+    }
+
+    // If we get here, we did not touch any of the possible objects
+    // and reached the target position.
+}
+
+void cActor::Move_With_Ground()
+{
+    // TODO
 }

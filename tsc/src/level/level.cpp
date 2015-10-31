@@ -341,6 +341,37 @@ void cLevel::Add_Collision_If_Required(cCollision* p_collision)
 }
 
 /**
+ * Returns a list of all actors inside the given rectangle.
+ *
+ * \param[in] rect
+ * The rectangle the actors are required to intersect.
+ *
+ * \param[in] p_excluded (NULL)
+ * If set, this actor is excluded from the checks, i.e. it will never
+ * be returned as part of the list returned by this method.
+ *
+ * \returns A list of actors which intersect the rectangle.
+ *
+ * \remark “Intersect” does not mean the actors returned by
+ * this method have to be entirely contained withing the rect,
+ * a bare intersection suffices.
+ */
+std::vector<cActor*> cLevel::Get_Colliding_Actors(const sf::FloatRect& rect, const cActor* p_excluded /* = NULL */)
+{
+    std::vector<cActor*> result;
+
+    for_each(m_actors.begin(), m_actors.end(), [&](cActor* p_actor) {
+      if (!p_excluded || (p_excluded && p_actor != p_excluded)) {
+          if (p_actor->Does_Collide(rect)) {
+              result.push_back(p_actor);
+          }
+      }
+    });
+
+    return result;
+}
+
+/**
  * Check all possible collisions on the given actor. This is
  * an expensive operation as it iterates the entire actor list.
  * When a collision is found, it is added via Add_Collision_If_Required()
@@ -354,6 +385,7 @@ void cLevel::Add_Collision_If_Required(cCollision* p_collision)
  * The actor to check for collisions on. It is assumed to be the
  * collision causer (i.e. the moving object, not the standing one).
  */
+/*
 void cLevel::Check_Collisions_For_Actor(cActor& actor)
 {
     std::vector<cActor*>::const_iterator iter;
@@ -371,7 +403,7 @@ void cLevel::Check_Collisions_For_Actor(cActor& actor)
             // MRuby Touch event is not fired here, that’s fired when the collisions are handled.
         }
     }
-}
+    }*/
 
 /**
  * Add a new actor to the level. This method takes care of inserting it at

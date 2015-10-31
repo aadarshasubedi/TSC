@@ -205,6 +205,10 @@ namespace TSC {
     private:
         void Init();
         void Check_On_Ground();
+        void Collide_Move();
+        void Col_Move(const sf::Vector2f& deltaPosition, bool force = false);
+        void Col_Move_in_Steps(sf::Vector2f deltaPosition, const std::vector<cActor*>& potential_collidors);
+        void Move_With_Ground();
 
         /** When setting an object to the side of another object using
          * Set_On_Ground() and Set_On_Side() this distance is used to
